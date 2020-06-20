@@ -47,15 +47,19 @@ const (
 	E32
 	E64
 	String
+	// [len]type
+	Array
+	// []type
+	Slice
 	// data
 	Data
 	// data<length>
 	DataFixed
 	// optional<type>
 	Optional
-	// [nmemb]type
+	// data<len>
 	DataArray
-	// []type
+	// data
 	DataSlice
 	// map[type]type
 	Map
@@ -121,4 +125,24 @@ func (mt *MapType) Key() Type {
 
 func (mt *MapType) Value() Type {
 	return mt.value
+}
+
+type ArrayType struct {
+	member Type
+	length uint
+}
+
+func (at *ArrayType) Kind() TypeKind {
+	if at.length == 0 {
+		return Slice
+	}
+	return Array
+}
+
+func (at *ArrayType) Member() Type {
+	return at.member
+}
+
+func (at *ArrayType) Length() uint {
+	return at.length
 }

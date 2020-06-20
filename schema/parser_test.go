@@ -110,3 +110,30 @@ func TestParseMap(t *testing.T) {
 	assert.Equal(t, U8, mt.Key().Kind())
 	assert.Equal(t, String, mt.Value().Kind())
 }
+
+func TestParseArrays(t *testing.T) {
+	types, err := Parse(strings.NewReader(`
+		type MyArray [128]string
+		type MySlice []string`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 2)
+
+	assert.IsType(t, new(UserDefinedType), types[0])
+	udt := types[0].(*UserDefinedType)
+	assert.Equal(t, "MyArray", udt.Name())
+
+	assert.IsType(t, new(ArrayType), udt.Type())
+	at := udt.Type().(*ArrayType)
+	assert.Equal(t, Array, at.Kind())
+	assert.Equal(t, uint(128), at.Length())
+	assert.Equal(t, String, at.Member().Kind())
+
+	assert.IsType(t, new(UserDefinedType), types[1])
+	udt = types[1].(*UserDefinedType)
+	assert.Equal(t, "MySlice", udt.Name())
+
+	assert.IsType(t, new(ArrayType), udt.Type())
+	at = udt.Type().(*ArrayType)
+	assert.Equal(t, Slice, at.Kind())
+	assert.Equal(t, String, at.Member().Kind())
+}

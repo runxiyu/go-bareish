@@ -114,6 +114,9 @@ func parseType(scanner *Scanner) (Type, error) {
 		return &PrimitiveType{String}, nil
 	case TOPTIONAL:
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TLANGLE {
 			return nil, &ErrUnexpectedToken{tok, "<"}
 		}
@@ -124,24 +127,36 @@ func parseType(scanner *Scanner) (Type, error) {
 		}
 
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TRANGLE {
 			return nil, &ErrUnexpectedToken{tok, ">"}
 		}
 		return &OptionalType{subtype: st}, nil
 	case TDATA:
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TLANGLE {
 			scanner.PushBack(tok)
 			return &DataType{0}, nil
 		}
 
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TINTEGER {
 			return nil, &ErrUnexpectedToken{tok, "integer"}
 		}
 		length, _ := strconv.ParseUint(tok.Value, 10, 32)
 
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TRANGLE {
 			return nil, &ErrUnexpectedToken{tok, ">"}
 		}
@@ -149,6 +164,9 @@ func parseType(scanner *Scanner) (Type, error) {
 		return &DataType{uint(length)}, nil
 	case TMAP:
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TLBRACKET {
 			return nil, &ErrUnexpectedToken{tok, "["}
 		}
@@ -159,6 +177,9 @@ func parseType(scanner *Scanner) (Type, error) {
 		}
 
 		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
 		if tok.Token != TRBRACKET {
 			return nil, &ErrUnexpectedToken{tok, "]"}
 		}
@@ -169,6 +190,38 @@ func parseType(scanner *Scanner) (Type, error) {
 		}
 
 		return &MapType{key, value}, nil
+	case TLBRACKET:
+		tok, err := scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var length uint
+		switch tok.Token {
+		case TINTEGER:
+			l, _ := strconv.ParseUint(tok.Value, 10, 32)
+			length = uint(l)
+
+			tok, err := scanner.Next()
+			if err != nil {
+				return nil, err
+			}
+			if tok.Token != TRBRACKET {
+				return nil, &ErrUnexpectedToken{tok, "]"}
+			}
+			break
+		case TRBRACKET:
+			break
+		default:
+			return nil, &ErrUnexpectedToken{tok, "]"}
+		}
+
+		member, err := parseType(scanner)
+		if err != nil {
+			return nil, err
+		}
+
+		return &ArrayType{member, length}, nil
 	case TNAME:
 		return nil, errors.New("TODO")
 	}
