@@ -70,7 +70,7 @@ func parseUserType(scanner *Scanner) (SchemaType, error) {
 }
 
 func parseUserEnum(scanner *Scanner) (SchemaType, error) {
-	return nil, errors.New("TODO")
+	panic(errors.New("TODO"))
 }
 
 func parseType(scanner *Scanner) (Type, error) {
@@ -125,7 +125,7 @@ func parseType(scanner *Scanner) (Type, error) {
 		scanner.PushBack(tok)
 		return parseArrayType(scanner)
 	case TNAME:
-		return nil, errors.New("TODO")
+		panic(errors.New("TODO"))
 	}
 
 	return nil, &ErrUnexpectedToken{tok, "type"}
