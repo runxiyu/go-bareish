@@ -68,3 +68,28 @@ func TestParseOptional(t *testing.T) {
 	ot := udt.Type().(*OptionalType)
 	assert.Equal(t, U32, ot.Subtype().Kind())
 }
+
+func TestParseData(t *testing.T) {
+	types, err := Parse(strings.NewReader(`
+		type MyData data
+		type MyData128 data<128>`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 2)
+
+	assert.IsType(t, new(UserDefinedType), types[0])
+	udt := types[0].(*UserDefinedType)
+	assert.Equal(t, "MyData", udt.Name())
+
+	assert.IsType(t, new(DataType), udt.Type())
+	dt := udt.Type().(*DataType)
+	assert.Equal(t, DataSlice, dt.Kind())
+
+	assert.IsType(t, new(UserDefinedType), types[1])
+	udt = types[1].(*UserDefinedType)
+	assert.Equal(t, "MyData128", udt.Name())
+
+	assert.IsType(t, new(DataType), udt.Type())
+	dt = udt.Type().(*DataType)
+	assert.Equal(t, DataArray, dt.Kind())
+	assert.Equal(t, uint(128), dt.Length())
+}

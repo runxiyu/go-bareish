@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 )
 
 // Returned when the lexer encounters an unexpected token
@@ -128,6 +129,24 @@ func parseType(scanner *Scanner) (Type, error) {
 		}
 		return &OptionalType{subtype: st}, nil
 	case TDATA:
+		tok, err = scanner.Next()
+		if tok.Token != TLANGLE {
+			scanner.PushBack(tok)
+			return &DataType{0}, nil
+		}
+
+		tok, err = scanner.Next()
+		if tok.Token != TINTEGER {
+			return nil, &ErrUnexpectedToken{tok, "integer"}
+		}
+		length, _ := strconv.ParseUint(tok.Value, 10, 32)
+
+		tok, err = scanner.Next()
+		if tok.Token != TRANGLE {
+			return nil, &ErrUnexpectedToken{tok, ">"}
+		}
+
+		return &DataType{uint(length)}, nil
 	case TMAP:
 	case TNAME:
 		return nil, errors.New("TODO")

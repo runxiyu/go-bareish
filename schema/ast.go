@@ -54,9 +54,9 @@ const (
 	// optional<type>
 	Optional
 	// [nmemb]type
-	Array
+	DataArray
 	// []type
-	Slice
+	DataSlice
 	// map[type]type
 	Map
 	// (type | type | ...)
@@ -89,4 +89,19 @@ func (ot *OptionalType) Kind() TypeKind {
 
 func (ot *OptionalType) Subtype() Type {
 	return ot.subtype
+}
+
+type DataType struct {
+	length uint
+}
+
+func (dt *DataType) Kind() TypeKind {
+	if dt.length == 0 {
+		return DataSlice
+	}
+	return DataArray
+}
+
+func (dt *DataType) Length() uint {
+	return dt.length
 }

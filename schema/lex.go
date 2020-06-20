@@ -14,18 +14,25 @@ import (
 type Scanner struct {
 	// TODO: track lineno/colno information and attach it to the tokens
 	// returned, for better error reporting
-	br *bufio.Reader
+	br       *bufio.Reader
+	pushback []Token
 }
 
 // Creates a new BARE schema language scanner for the given reader.
 func NewScanner(reader io.Reader) *Scanner {
-	return &Scanner{bufio.NewReader(reader)}
+	return &Scanner{bufio.NewReader(reader), nil}
 }
 
 // Returns the next token from the reader. If the token has a string associated
 // with it (e.g. UserTypeName, Name, and Integer), the second return value is
 // set to that string.
 func (sc *Scanner) Next() (Token, error) {
+	if len(sc.pushback) != 0 {
+		tok := sc.pushback[0]
+		sc.pushback = sc.pushback[1:]
+		return tok, nil
+	}
+
 	var (
 		err error
 		r   rune
@@ -83,6 +90,12 @@ func (sc *Scanner) Next() (Token, error) {
 	}
 
 	return Token{}, err
+}
+
+// Pushes a token back to the scanner, causing it to be returned on the next
+// call to Next.
+func (sc *Scanner) PushBack(tok Token) {
+	sc.pushback = append(sc.pushback, tok)
 }
 
 // Returned when the lexer encounters an unexpected character
