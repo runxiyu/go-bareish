@@ -14,7 +14,7 @@ import (
 func Unmarshal(data []byte, val interface{}) error {
 	b := bytes.NewReader(data)
 	r := NewReader(b)
-	return unmarshalReader(r, val)
+	return UnmarshalReader(r, val)
 }
 
 // Unmarshals a BARE message into val, from a reader. val should be a pointer
@@ -119,7 +119,7 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.NumField(); i++ {
 		value := v.Field(i)
-		err := unmarshalReader(r, value.Addr().Interface())
+		err := UnmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
