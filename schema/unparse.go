@@ -11,10 +11,10 @@ import (
 
 func SchemaFor(val interface{}) (string, error) {
 	t := reflect.TypeOf(val)
-	return schemaFor(t)
+	return SchemaForType(t)
 }
 
-func schemaFor(t reflect.Type) (string, error) {
+func SchemaForType(t reflect.Type) (string, error) {
 	// TODO: Implement user-defined types for unparsing schemas from
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
@@ -23,8 +23,7 @@ func schemaFor(t reflect.Type) (string, error) {
 	}
 
 	if t.Kind() == reflect.Ptr {
-		t = t.Elem()
-		schema, err := schemaFor(t)
+		schema, err := SchemaForType(t)
 		if err != nil {
 			return "", err
 		}
@@ -71,7 +70,7 @@ func schemaForStruct(t reflect.Type) (string, error) {
 	buf := bytes.NewBufferString("{\n")
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
-		schema, err := schemaFor(field.Type)
+		schema, err := SchemaForType(field.Type)
 		if err != nil {
 			return "", err
 		}

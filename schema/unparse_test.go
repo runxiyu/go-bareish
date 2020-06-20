@@ -83,3 +83,11 @@ func TestUnparseValue(t *testing.T) {
 	assert.Nil(t, err, "Expected SchemaFor to return without error")
 	assert.Equal(t, schema, "string", "Expected SchemaFor to return string")
 }
+
+func TestUnparseOptional(t *testing.T) {
+	var val *string
+	schema, err := SchemaFor(&val)
+	assert.Nil(t, err, "Expected SchemaFor to return without error")
+	assert.Equal(t, schema, "optional<string>",
+		"Expected SchemaFor to return optional<string>")
+}
