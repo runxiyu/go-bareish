@@ -3,84 +3,21 @@ package schema
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"unicode"
 )
 
-// Returned when the lexer encounters an unexpected character
-type ErrUnknownToken struct {
-	token rune
-}
-
-func (e *ErrUnknownToken) Error() string {
-	return fmt.Sprintf("Unknown token '%c'", e.token)
-}
-
-// A single lexographic token from a schema language token stream
-type Token int
-
-const (
-	TTYPE Token = iota
-	TENUM
-
-	// NAME is used for name, user-type-name, and enum-value-name.
-	// Distinguishing between these requires context.
-	TNAME
-	TINTEGER
-
-	TU8
-	TU16
-	TU32
-	TU64
-	TI8
-	TI16
-	TI32
-	TI64
-	TF32
-	TF64
-	TE8
-	TE16
-	TE32
-	TE64
-	TBOOL
-	TSTRING
-	TDATA
-	TMAP
-	TOPTIONAL
-
-	// <
-	TLANGLE
-	// >
-	TRANGLE
-	// {
-	TLBRACE
-	// }
-	TRBRACE
-	// [
-	TLBRACKET
-	// ]
-	TRBRACKET
-	// (
-	TLPAREN
-	// )
-	TRPAREN
-	// ,
-	TCOMMA
-	// |
-	TPIPE
-	// =
-	TEQUAL
-	// :
-	TCOLON
-)
-
+// A scanner for reading lexographic tokens from a BARE schema language
+// document.
 type Scanner struct {
 	// TODO: track lineno/colno information and attach it to the tokens
 	// returned, for better error reporting
 	br *bufio.Reader
 }
 
+// Creates a new BARE schema language scanner for the given reader.
 func NewScanner(reader io.Reader) *Scanner {
 	return &Scanner{bufio.NewReader(reader)}
 }
@@ -146,6 +83,15 @@ func (sc *Scanner) Next() (Token, string, error) {
 	}
 
 	return 0, "", err
+}
+
+// Returned when the lexer encounters an unexpected character
+type ErrUnknownToken struct {
+	token rune
+}
+
+func (e *ErrUnknownToken) Error() string {
+	return fmt.Sprintf("Unknown token '%c'", e.token)
 }
 
 func (sc *Scanner) scanWord() (Token, string, error) {
@@ -238,4 +184,139 @@ func (sc *Scanner) scanInteger() (Token, string, error) {
 	}
 
 	return TINTEGER, buf.String(), nil
+}
+
+// A single lexographic token from a schema language token stream
+type Token int
+
+const (
+	TTYPE Token = iota
+	TENUM
+
+	// NAME is used for name, user-type-name, and enum-value-name.
+	// Distinguishing between these requires context.
+	TNAME
+	TINTEGER
+
+	TU8
+	TU16
+	TU32
+	TU64
+	TI8
+	TI16
+	TI32
+	TI64
+	TF32
+	TF64
+	TE8
+	TE16
+	TE32
+	TE64
+	TBOOL
+	TSTRING
+	TDATA
+	TMAP
+	TOPTIONAL
+
+	// <
+	TLANGLE
+	// >
+	TRANGLE
+	// {
+	TLBRACE
+	// }
+	TRBRACE
+	// [
+	TLBRACKET
+	// ]
+	TRBRACKET
+	// (
+	TLPAREN
+	// )
+	TRPAREN
+	// ,
+	TCOMMA
+	// |
+	TPIPE
+	// =
+	TEQUAL
+	// :
+	TCOLON
+)
+
+func (t Token) String() string {
+	switch t {
+	case TTYPE:
+		return "type"
+	case TENUM:
+		return "enum"
+	case TNAME:
+		return "name"
+	case TINTEGER:
+		return "integer"
+	case TU8:
+		return "u8"
+	case TU16:
+		return "u16"
+	case TU32:
+		return "u32"
+	case TU64:
+		return "u64"
+	case TI8:
+		return "i8"
+	case TI16:
+		return "i16"
+	case TI32:
+		return "i32"
+	case TI64:
+		return "i64"
+	case TF32:
+		return "f32"
+	case TF64:
+		return "f64"
+	case TE8:
+		return "e8"
+	case TE16:
+		return "e16"
+	case TE32:
+		return "e32"
+	case TE64:
+		return "e64"
+	case TBOOL:
+		return "bool"
+	case TSTRING:
+		return "string"
+	case TDATA:
+		return "data"
+	case TMAP:
+		return "map"
+	case TOPTIONAL:
+		return "optional"
+	case TLANGLE:
+		return "<"
+	case TRANGLE:
+		return ">"
+	case TLBRACE:
+		return "{"
+	case TRBRACE:
+		return "}"
+	case TLBRACKET:
+		return "["
+	case TRBRACKET:
+		return "]"
+	case TLPAREN:
+		return "("
+	case TRPAREN:
+		return ")"
+	case TCOMMA:
+		return ","
+	case TPIPE:
+		return "|"
+	case TEQUAL:
+		return "="
+	case TCOLON:
+		return ":"
+	default:
+		panic(errors.New("Invalid token value"))
+	}
 }
