@@ -28,10 +28,7 @@ func SchemaFor(val interface{}) (string, error) {
 }
 
 // Given a reflect.Type, returns the BARE schema language representation for
-// that type.
-//
-// Given a struct type, if the "bare" tag is found on its fields, it will be
-// used as the field name in the generated schema.
+// that type. See SchemaFor for details.
 func SchemaForType(t reflect.Type) (string, error) {
 	// TODO: Implement user-defined types for unparsing schemas from
 	if t.Kind() == reflect.Ptr {
