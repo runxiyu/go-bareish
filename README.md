@@ -1,4 +1,4 @@
-# go-bare
+# go-bare [![GoDoc](https://godoc.org/git.sr.ht/~sircmpwn/go-bare?status.svg)](https://godoc.org/git.sr.ht/~sircmpwn/go-bare)
 
 An implementation of the [BARE](https://git.sr.ht/~sircmpwn/bare) message format
 for Go.
