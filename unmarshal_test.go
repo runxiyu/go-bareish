@@ -157,3 +157,19 @@ func TestUnmarshalSlice(t *testing.T) {
 	assert.Equal(t, uint8(0x33), val[2], "Expected Unmarshal to read 0x33")
 	assert.Equal(t, uint8(0x44), val[3], "Expected Unmarshal to read 0x44")
 }
+
+func TestUnmarshalMap(t *testing.T) {
+	var val map[uint8]uint8
+	payload := []byte{
+		0x03, 0x00, 0x00, 0x00,
+		0x01, 0x11,
+		0x02, 0x22,
+		0x03, 0x33,
+	}
+	err := Unmarshal(payload, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, 3, len(val), "Expected Unmarshal to read map of length 3")
+	assert.Equal(t, uint8(0x11), val[uint8(0x01)], "Expected Unmarshal to read 0x01 -> 0x11")
+	assert.Equal(t, uint8(0x22), val[uint8(0x02)], "Expected Unmarshal to read 0x02 -> 0x22")
+	assert.Equal(t, uint8(0x33), val[uint8(0x03)], "Expected Unmarshal to read 0x03 -> 0x33")
+}

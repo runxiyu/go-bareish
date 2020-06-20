@@ -114,6 +114,8 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		return unmarshalSlice(r, t, v)
 	case reflect.Struct:
 		return unmarshalStruct(r, t, v)
+	case reflect.Map:
+		return unmarshalMap(r, t, v)
 	default:
 		return &UnsupportedTypeError{t}
 	}
@@ -156,5 +158,28 @@ func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
 		}
 	}
 	v.Set(slice)
+	return nil
+}
+
+func unmarshalMap(r *Reader, t reflect.Type, v reflect.Value) error {
+	l, err := r.ReadU32()
+	if err != nil {
+		return err
+	}
+	m := reflect.MakeMapWithSize(t, int(l))
+	for i := 0; i < int(l); i++ {
+		key := reflect.New(t.Key())
+		value := reflect.New(t.Elem())
+		err := UnmarshalReader(r, key.Interface())
+		if err != nil {
+			return err
+		}
+		err = UnmarshalReader(r, value.Interface())
+		if err != nil {
+			return err
+		}
+		m.SetMapIndex(key.Elem(), value.Elem())
+	}
+	v.Set(m)
 	return nil
 }
