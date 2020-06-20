@@ -108,6 +108,10 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		var s string
 		s, err = r.ReadString()
 		v.SetString(s)
+	case reflect.Array:
+		return unmarshalArray(r, t, v)
+	case reflect.Slice:
+		return unmarshalSlice(r, t, v)
 	case reflect.Struct:
 		return unmarshalStruct(r, t, v)
 	default:
@@ -124,5 +128,33 @@ func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
 			return err
 		}
 	}
+	return nil
+}
+
+func unmarshalArray(r *Reader, t reflect.Type, v reflect.Value) error {
+	for i := 0; i < t.Len(); i++ {
+		value := v.Index(i)
+		err := UnmarshalReader(r, value.Addr().Interface())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
+	l, err := r.ReadU32()
+	if err != nil {
+		return err
+	}
+	slice := reflect.MakeSlice(t, int(l), int(l))
+	for i := 0; i < int(l); i++ {
+		value := slice.Index(i)
+		err := UnmarshalReader(r, value.Addr().Interface())
+		if err != nil {
+			return err
+		}
+	}
+	v.Set(slice)
 	return nil
 }

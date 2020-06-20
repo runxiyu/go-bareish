@@ -136,3 +136,24 @@ func TestUnmarshalStruct(t *testing.T) {
 	assert.Equal(t, 2, coords.Y, "Expected Unmarshal to read {1, 2, 3}")
 	assert.Equal(t, 3, coords.Z, "Expected Unmarshal to read {1, 2, 3}")
 }
+
+func TestUnmarshalArray(t *testing.T) {
+	var val [4]uint8
+	err := Unmarshal([]byte{0x11, 0x22, 0x33, 0x44}, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, uint8(0x11), val[0], "Expected Unmarshal to read 0x11")
+	assert.Equal(t, uint8(0x22), val[1], "Expected Unmarshal to read 0x22")
+	assert.Equal(t, uint8(0x33), val[2], "Expected Unmarshal to read 0x33")
+	assert.Equal(t, uint8(0x44), val[3], "Expected Unmarshal to read 0x44")
+}
+
+func TestUnmarshalSlice(t *testing.T) {
+	var val []uint8
+	err := Unmarshal([]byte{0x04, 0x00, 0x00, 0x00, 0x11, 0x22, 0x33, 0x44}, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, 4, len(val), "Expected Unmarshal to read slice of length 4")
+	assert.Equal(t, uint8(0x11), val[0], "Expected Unmarshal to read 0x11")
+	assert.Equal(t, uint8(0x22), val[1], "Expected Unmarshal to read 0x22")
+	assert.Equal(t, uint8(0x33), val[2], "Expected Unmarshal to read 0x33")
+	assert.Equal(t, uint8(0x44), val[3], "Expected Unmarshal to read 0x44")
+}
