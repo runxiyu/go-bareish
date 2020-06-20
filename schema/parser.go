@@ -111,12 +111,17 @@ func parseType(scanner *Scanner) (Type, error) {
 		return &PrimitiveType{Bool}, nil
 	case TSTRING:
 		return &PrimitiveType{String}, nil
+	case TOPTIONAL:
+		st, err := parseType(scanner)
+		if err != nil {
+			return nil, err
+		}
+		return &OptionalType{subtype: st}, nil
 	case TDATA:
 	case TMAP:
-	case TOPTIONAL:
 	case TNAME:
 		return nil, errors.New("TODO: " + name)
 	}
 
-	return nil, errors.New("TODO")
+	return nil, &ErrUnexpectedToken{tok, "type"}
 }

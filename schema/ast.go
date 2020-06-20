@@ -78,3 +78,15 @@ type PrimitiveType struct {
 func (pt *PrimitiveType) Kind() TypeKind {
 	return pt.kind
 }
+
+type OptionalType struct {
+	subtype Type
+}
+
+func (ot *OptionalType) Kind() TypeKind {
+	return Optional
+}
+
+func (ot *OptionalType) Subtype() Type {
+	return ot.subtype
+}

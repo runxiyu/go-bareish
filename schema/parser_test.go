@@ -42,14 +42,29 @@ func ParsePrimitives(t *testing.T) {
 		type MyBool bool
 		type MyString string
 	`))
-	assert.NoError(t, err, "Expected Parse to return without error")
+	assert.NoError(t, err)
+	assert.Len(t, types, len(reference))
 
 	for i, ty := range types {
 		ref := reference[i]
-		assert.IsType(t, ty, new(*UserDefinedType), "Expected primitive type")
+		assert.IsType(t, ty, new(*UserDefinedType))
 
-		udt, _ := ty.(*UserDefinedType)
-		assert.Equal(t, udt.Name(), ref.name, "Incorrect type name")
-		assert.Equal(t, udt.Type().Kind(), ref.kind, "Incorrect type kind")
+		udt := ty.(*UserDefinedType)
+		assert.Equal(t, ref.name, udt.Name())
+		assert.Equal(t, ref.kind, udt.Type().Kind())
 	}
+}
+
+func ParseOptional(t *testing.T) {
+	types, err := Parse(strings.NewReader("type MyOptional optional<u32>"))
+	assert.NoError(t, err)
+	assert.Len(t, types, 1)
+
+	assert.IsType(t, new(*UserDefinedType), types[0])
+	udt := types[0].(*UserDefinedType)
+	assert.Equal(t, "MyOptional", udt.Name())
+
+	assert.IsType(t, new(*OptionalType), udt.Type())
+	ot := udt.Type().(*OptionalType)
+	assert.Equal(t, ot.Subtype().Kind(), U8)
 }
