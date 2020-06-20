@@ -105,3 +105,20 @@ func (dt *DataType) Kind() TypeKind {
 func (dt *DataType) Length() uint {
 	return dt.length
 }
+
+type MapType struct {
+	key   Type
+	value Type
+}
+
+func (mt *MapType) Kind() TypeKind {
+	return Map
+}
+
+func (mt *MapType) Key() Type {
+	return mt.key
+}
+
+func (mt *MapType) Value() Type {
+	return mt.value
+}

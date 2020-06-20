@@ -93,3 +93,20 @@ func TestParseData(t *testing.T) {
 	assert.Equal(t, DataArray, dt.Kind())
 	assert.Equal(t, uint(128), dt.Length())
 }
+
+func TestParseMap(t *testing.T) {
+	types, err := Parse(strings.NewReader(`type MyMap map[u8]string`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 1)
+
+	assert.IsType(t, new(UserDefinedType), types[0])
+	udt := types[0].(*UserDefinedType)
+	assert.Equal(t, "MyMap", udt.Name())
+
+	assert.IsType(t, new(MapType), udt.Type())
+	mt := udt.Type().(*MapType)
+	assert.Equal(t, Map, mt.Kind())
+
+	assert.Equal(t, U8, mt.Key().Kind())
+	assert.Equal(t, String, mt.Value().Kind())
+}

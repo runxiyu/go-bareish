@@ -148,6 +148,27 @@ func parseType(scanner *Scanner) (Type, error) {
 
 		return &DataType{uint(length)}, nil
 	case TMAP:
+		tok, err = scanner.Next()
+		if tok.Token != TLBRACKET {
+			return nil, &ErrUnexpectedToken{tok, "["}
+		}
+
+		key, err := parseType(scanner)
+		if err != nil {
+			return nil, err
+		}
+
+		tok, err = scanner.Next()
+		if tok.Token != TRBRACKET {
+			return nil, &ErrUnexpectedToken{tok, "]"}
+		}
+
+		value, err := parseType(scanner)
+		if err != nil {
+			return nil, err
+		}
+
+		return &MapType{key, value}, nil
 	case TNAME:
 		return nil, errors.New("TODO")
 	}
