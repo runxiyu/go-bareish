@@ -35,12 +35,12 @@ func Parse(reader io.Reader) ([]SchemaType, error) {
 }
 
 func parseSchemaType(scanner *Scanner) (SchemaType, error) {
-	tok, _, err := scanner.Next()
+	tok, err := scanner.Next()
 	if err != nil {
 		return nil, err
 	}
 
-	switch tok {
+	switch tok.Token {
 	case TTYPE:
 		return parseUserType(scanner)
 	case TENUM:
@@ -51,15 +51,15 @@ func parseSchemaType(scanner *Scanner) (SchemaType, error) {
 }
 
 func parseUserType(scanner *Scanner) (SchemaType, error) {
-	tok, name, err := scanner.Next()
+	tok, err := scanner.Next()
 	if err != nil {
 		return nil, err
 	}
-	if tok != TNAME {
+	if tok.Token != TNAME {
 		return nil, &ErrUnexpectedToken{tok, "type name"}
 	}
 
-	udt := &UserDefinedType{name: name}
+	udt := &UserDefinedType{name: tok.Value}
 	udt.type_, err = parseType(scanner)
 	if err != nil {
 		return nil, err
@@ -73,12 +73,12 @@ func parseUserEnum(scanner *Scanner) (SchemaType, error) {
 }
 
 func parseType(scanner *Scanner) (Type, error) {
-	tok, name, err := scanner.Next()
+	tok, err := scanner.Next()
 	if err != nil {
 		return nil, err
 	}
 
-	switch tok {
+	switch tok.Token {
 	case TU8:
 		return &PrimitiveType{U8}, nil
 	case TU16:
@@ -112,8 +112,8 @@ func parseType(scanner *Scanner) (Type, error) {
 	case TSTRING:
 		return &PrimitiveType{String}, nil
 	case TOPTIONAL:
-		tok, _, err = scanner.Next()
-		if tok != TLANGLE {
+		tok, err = scanner.Next()
+		if tok.Token != TLANGLE {
 			return nil, &ErrUnexpectedToken{tok, "<"}
 		}
 
@@ -122,15 +122,15 @@ func parseType(scanner *Scanner) (Type, error) {
 			return nil, err
 		}
 
-		tok, _, err = scanner.Next()
-		if tok != TRANGLE {
+		tok, err = scanner.Next()
+		if tok.Token != TRANGLE {
 			return nil, &ErrUnexpectedToken{tok, ">"}
 		}
 		return &OptionalType{subtype: st}, nil
 	case TDATA:
 	case TMAP:
 	case TNAME:
-		return nil, errors.New("TODO: " + name)
+		return nil, errors.New("TODO")
 	}
 
 	return nil, &ErrUnexpectedToken{tok, "type"}

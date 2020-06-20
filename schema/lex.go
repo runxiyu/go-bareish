@@ -25,7 +25,7 @@ func NewScanner(reader io.Reader) *Scanner {
 // Returns the next token from the reader. If the token has a string associated
 // with it (e.g. UserTypeName, Name, and Integer), the second return value is
 // set to that string.
-func (sc *Scanner) Next() (Token, string, error) {
+func (sc *Scanner) Next() (Token, error) {
 	var (
 		err error
 		r   rune
@@ -54,35 +54,35 @@ func (sc *Scanner) Next() (Token, string, error) {
 			sc.br.ReadString('\n')
 			continue
 		case '<':
-			return TLANGLE, "", nil
+			return Token{TLANGLE, ""}, nil
 		case '>':
-			return TRANGLE, "", nil
+			return Token{TRANGLE, ""}, nil
 		case '{':
-			return TLBRACE, "", nil
+			return Token{TLBRACE, ""}, nil
 		case '}':
-			return TRBRACE, "", nil
+			return Token{TRBRACE, ""}, nil
 		case '[':
-			return TLBRACKET, "", nil
+			return Token{TLBRACKET, ""}, nil
 		case ']':
-			return TRBRACKET, "", nil
+			return Token{TRBRACKET, ""}, nil
 		case '(':
-			return TLPAREN, "", nil
+			return Token{TLPAREN, ""}, nil
 		case ')':
-			return TRPAREN, "", nil
+			return Token{TRPAREN, ""}, nil
 		case ',':
-			return TCOMMA, "", nil
+			return Token{TCOMMA, ""}, nil
 		case '|':
-			return TPIPE, "", nil
+			return Token{TPIPE, ""}, nil
 		case '=':
-			return TEQUAL, "", nil
+			return Token{TEQUAL, ""}, nil
 		case ':':
-			return TCOLON, "", nil
+			return Token{TCOLON, ""}, nil
 		}
 
-		return 0, "", &ErrUnknownToken{r}
+		return Token{}, &ErrUnknownToken{r}
 	}
 
-	return 0, "", err
+	return Token{}, err
 }
 
 // Returned when the lexer encounters an unexpected character
@@ -94,7 +94,7 @@ func (e *ErrUnknownToken) Error() string {
 	return fmt.Sprintf("Unknown token '%c'", e.token)
 }
 
-func (sc *Scanner) scanWord() (Token, string, error) {
+func (sc *Scanner) scanWord() (Token, error) {
 	var buf bytes.Buffer
 
 	for {
@@ -103,7 +103,7 @@ func (sc *Scanner) scanWord() (Token, string, error) {
 			if err == io.EOF {
 				break
 			}
-			return 0, "", err
+			return Token{}, err
 		}
 
 		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
@@ -117,53 +117,53 @@ func (sc *Scanner) scanWord() (Token, string, error) {
 	tok := buf.String()
 	switch tok {
 	case "type":
-		return TTYPE, "", nil
+		return Token{TTYPE, ""}, nil
 	case "enum":
-		return TENUM, "", nil
+		return Token{TENUM, ""}, nil
 	case "u8":
-		return TU8, "", nil
+		return Token{TU8, ""}, nil
 	case "u16":
-		return TU16, "", nil
+		return Token{TU16, ""}, nil
 	case "u32":
-		return TU32, "", nil
+		return Token{TU32, ""}, nil
 	case "u64":
-		return TU64, "", nil
+		return Token{TU64, ""}, nil
 	case "i8":
-		return TI8, "", nil
+		return Token{TI8, ""}, nil
 	case "i16":
-		return TI16, "", nil
+		return Token{TI16, ""}, nil
 	case "i32":
-		return TI32, "", nil
+		return Token{TI32, ""}, nil
 	case "i64":
-		return TI64, "", nil
+		return Token{TI64, ""}, nil
 	case "f32":
-		return TF32, "", nil
+		return Token{TF32, ""}, nil
 	case "f64":
-		return TF64, "", nil
+		return Token{TF64, ""}, nil
 	case "bool":
-		return TBOOL, "", nil
+		return Token{TBOOL, ""}, nil
 	case "e8":
-		return TE8, "", nil
+		return Token{TE8, ""}, nil
 	case "e16":
-		return TE16, "", nil
+		return Token{TE16, ""}, nil
 	case "e32":
-		return TE32, "", nil
+		return Token{TE32, ""}, nil
 	case "e64":
-		return TE64, "", nil
+		return Token{TE64, ""}, nil
 	case "string":
-		return TSTRING, "", nil
+		return Token{TSTRING, ""}, nil
 	case "data":
-		return TDATA, "", nil
+		return Token{TDATA, ""}, nil
 	case "optional":
-		return TOPTIONAL, "", nil
+		return Token{TOPTIONAL, ""}, nil
 	case "map":
-		return TMAP, "", nil
+		return Token{TMAP, ""}, nil
 	}
 
-	return TNAME, tok, nil
+	return Token{TNAME, tok}, nil
 }
 
-func (sc *Scanner) scanInteger() (Token, string, error) {
+func (sc *Scanner) scanInteger() (Token, error) {
 	var buf bytes.Buffer
 
 	for {
@@ -172,7 +172,7 @@ func (sc *Scanner) scanInteger() (Token, string, error) {
 			if err == io.EOF {
 				break
 			}
-			return 0, "", err
+			return Token{}, err
 		}
 
 		if unicode.IsDigit(r) {
@@ -183,14 +183,19 @@ func (sc *Scanner) scanInteger() (Token, string, error) {
 		}
 	}
 
-	return TINTEGER, buf.String(), nil
+	return Token{TINTEGER, buf.String()}, nil
 }
 
 // A single lexographic token from a schema language token stream
-type Token int
+type Token struct {
+	Token TokenKind
+	Value string
+}
+
+type TokenKind int
 
 const (
-	TTYPE Token = iota
+	TTYPE TokenKind = iota
 	TENUM
 
 	// NAME is used for name, user-type-name, and enum-value-name.
@@ -245,7 +250,7 @@ const (
 )
 
 func (t Token) String() string {
-	switch t {
+	switch t.Token {
 	case TTYPE:
 		return "type"
 	case TENUM:

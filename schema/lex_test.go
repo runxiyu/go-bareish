@@ -9,7 +9,7 @@ import (
 )
 
 func TestScanWords(t *testing.T) {
-	cases := map[string]Token{
+	cases := map[string]TokenKind{
 		"u8": TU8,
 		"u16": TU16,
 		"u32": TU32,
@@ -33,36 +33,36 @@ func TestScanWords(t *testing.T) {
 
 	for input, reference := range cases {
 		scanner := NewScanner(strings.NewReader(input))
-		tok, val, err := scanner.Next()
+		tok, err := scanner.Next()
 		assert.NoError(t, err, "Expected Scan to return without error")
-		assert.Empty(t, val, "Expected Scan to return no value")
-		assert.Equal(t, reference, tok,
+		assert.Empty(t, tok.Value, "Expected Scan to return no value")
+		assert.Equal(t, reference, tok.Token,
 			"Expected Scan to return reference value for %s", input)
-		_, _, err = scanner.Next()
+		_, err = scanner.Next()
 		assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 	}
 
 	scanner := NewScanner(strings.NewReader("hello"))
-	tok, val, err := scanner.Next()
+	tok, err := scanner.Next()
 	assert.NoError(t, err, "Expected Scan to return without error")
-	assert.Equal(t, val, "hello", "Expected Scan to return value 'hello'")
-	assert.Equal(t, TNAME, tok, "Expected Scan to return TNAME")
-	_, _, err = scanner.Next()
+	assert.Equal(t, tok.Value, "hello", "Expected Scan to return value 'hello'")
+	assert.Equal(t, TNAME, tok.Token, "Expected Scan to return TNAME")
+	_, err = scanner.Next()
 	assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 }
 
 func TestScanInteger(t *testing.T) {
 	scanner := NewScanner(strings.NewReader("12345"))
-	tok, val, err := scanner.Next()
+	tok, err := scanner.Next()
 	assert.NoError(t, err, "Expected Scan to return without error")
-	assert.Equal(t, val, "12345", "Expected Scan to return value '12345'")
-	assert.Equal(t, TINTEGER, tok, "Expected Scan to return TINTEGER")
-	_, _, err = scanner.Next()
+	assert.Equal(t, tok.Value, "12345", "Expected Scan to return value '12345'")
+	assert.Equal(t, TINTEGER, tok.Token, "Expected Scan to return TINTEGER")
+	_, err = scanner.Next()
 	assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 }
 
 func TestScanSymbols(t *testing.T) {
-	cases := map[string]Token{
+	cases := map[string]TokenKind{
 		"<": TLANGLE,
 		">": TRANGLE,
 		"{": TLBRACE,
@@ -75,12 +75,12 @@ func TestScanSymbols(t *testing.T) {
 
 	for input, reference := range cases {
 		scanner := NewScanner(strings.NewReader(input))
-		tok, val, err := scanner.Next()
+		tok, err := scanner.Next()
 		assert.NoError(t, err, "Expected Scan to return without error")
-		assert.Empty(t, val, "Expected Scan to return no value")
-		assert.Equal(t, reference, tok,
+		assert.Empty(t, tok.Value, "Expected Scan to return no value")
+		assert.Equal(t, reference, tok.Token,
 			"Expected Scan to return reference value for %s", input)
-		_, _, err = scanner.Next()
+		_, err = scanner.Next()
 		assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 	}
 }
@@ -112,11 +112,7 @@ func TestScanSample(t *testing.T) {
 	}
 
 	type Person (Customer | Employee)`
-	type Reference struct {
-		tok Token
-		val string
-	}
-	reference := []Reference{
+	reference := []Token{
 		{TTYPE, ""}, {TNAME, "PublicKey"}, {TDATA, ""},
 			{TLANGLE, ""}, {TINTEGER, "128"}, {TRANGLE, ""},
 		{TTYPE, ""}, {TNAME, "Time"}, {TSTRING, ""},
@@ -146,12 +142,12 @@ func TestScanSample(t *testing.T) {
 	}
 	scanner := NewScanner(strings.NewReader(sample))
 	for i, ref := range reference {
-		tok, val, err := scanner.Next()
+		tok, err := scanner.Next()
 		assert.NoError(t, err, "Expected Scan to return without error for reference %d", i)
-		assert.Equal(t, ref.tok, tok, "Expected Scan to return correct token for reference %d", i)
-		assert.Equal(t, ref.val, val, "Expected Scan to return correct value for reference %d", i)
+		assert.Equal(t, ref.Token, tok.Token, "Expected Scan to return correct token for reference %d", i)
+		assert.Equal(t, ref.Value, tok.Value, "Expected Scan to return correct value for reference %d", i)
 	}
 
-	_, _, err := scanner.Next()
+	_, err := scanner.Next()
 	assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 }
