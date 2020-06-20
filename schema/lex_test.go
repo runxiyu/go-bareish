@@ -10,25 +10,25 @@ import (
 
 func TestScanWords(t *testing.T) {
 	cases := map[string]Token{
-		"u8": U8,
-		"u16": U16,
-		"u32": U32,
-		"u64": U64,
-		"i8": I8,
-		"i16": I16,
-		"i32": I32,
-		"i64": I64,
-		"f32": F32,
-		"f64": F64,
-		"e8": E8,
-		"e16": E16,
-		"e32": E32,
-		"e64": E64,
-		"bool": BOOL,
-		"string": STRING,
-		"data": DATA,
-		"map": MAP,
-		"optional": OPTIONAL,
+		"u8": TU8,
+		"u16": TU16,
+		"u32": TU32,
+		"u64": TU64,
+		"i8": TI8,
+		"i16": TI16,
+		"i32": TI32,
+		"i64": TI64,
+		"f32": TF32,
+		"f64": TF64,
+		"e8": TE8,
+		"e16": TE16,
+		"e32": TE32,
+		"e64": TE64,
+		"bool": TBOOL,
+		"string": TSTRING,
+		"data": TDATA,
+		"map": TMAP,
+		"optional": TOPTIONAL,
 	}
 
 	for input, reference := range cases {
@@ -46,7 +46,7 @@ func TestScanWords(t *testing.T) {
 	tok, val, err := scanner.Next()
 	assert.NoError(t, err, "Expected Scan to return without error")
 	assert.Equal(t, val, "hello", "Expected Scan to return value 'hello'")
-	assert.Equal(t, NAME, tok, "Expected Scan to return NAME")
+	assert.Equal(t, TNAME, tok, "Expected Scan to return TNAME")
 	_, _, err = scanner.Next()
 	assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 }
@@ -56,21 +56,21 @@ func TestScanInteger(t *testing.T) {
 	tok, val, err := scanner.Next()
 	assert.NoError(t, err, "Expected Scan to return without error")
 	assert.Equal(t, val, "12345", "Expected Scan to return value '12345'")
-	assert.Equal(t, INTEGER, tok, "Expected Scan to return INTEGER")
+	assert.Equal(t, TINTEGER, tok, "Expected Scan to return TINTEGER")
 	_, _, err = scanner.Next()
 	assert.Equal(t, io.EOF, err, "Expected Scan to return EOF")
 }
 
 func TestScanSymbols(t *testing.T) {
 	cases := map[string]Token{
-		"<": LANGLE,
-		">": RANGLE,
-		"{": LBRACE,
-		"}": RBRACE,
-		"[": LBRACKET,
-		"]": RBRACKET,
-		"(": LPAREN,
-		")": RPAREN,
+		"<": TLANGLE,
+		">": TRANGLE,
+		"{": TLBRACE,
+		"}": TRBRACE,
+		"[": TLBRACKET,
+		"]": TRBRACKET,
+		"(": TLPAREN,
+		")": TRPAREN,
 	}
 
 	for input, reference := range cases {
@@ -88,7 +88,7 @@ func TestScanSymbols(t *testing.T) {
 func TestScanSample(t *testing.T) {
 	sample := `
 	type PublicKey data<128>
-	type Time string # ISO 8601
+	type Time string # ISO T8601
 
 	enum Department e8 {
 		ACCOUNTING,
@@ -117,32 +117,32 @@ func TestScanSample(t *testing.T) {
 		val string
 	}
 	reference := []Reference{
-		{TYPE, ""}, {NAME, "PublicKey"}, {DATA, ""},
-			{LANGLE, ""}, {INTEGER, "128"}, {RANGLE, ""},
-		{TYPE, ""}, {NAME, "Time"}, {STRING, ""},
-		{ENUM, ""}, {NAME, "Department"}, {E8, ""}, {LBRACE, ""},
-			{NAME, "ACCOUNTING"}, {COMMA, ""},
-			{NAME, "ADMINISTRATION"}, {COMMA, ""},
-			{NAME, "CUSTOMER_SERVICE"}, {COMMA, ""},
-			{NAME, "DEVELOPMENT"}, {COMMA, ""},
-			{NAME, "JSMITH"}, {EQUAL, ""}, {INTEGER, "99"}, {COMMA, ""},
-		{RBRACE, ""},
-		{TYPE, ""}, {NAME, "Customer"}, {LBRACE, ""},
-		{NAME, "name"}, {COLON, ""}, {STRING, ""}, {COMMA, ""},
-		{NAME, "email"}, {COLON, ""}, {STRING, ""}, {COMMA, ""},
-		{NAME, "address"}, {COLON, ""}, {NAME, "Address"}, {COMMA, ""},
-		{NAME, "orders"}, {COLON, ""}, {LBRACKET, ""}, {RBRACKET, ""}, {LBRACE, ""},
-			{NAME, "orderId"}, {COLON, ""}, {I64, ""}, {COMMA, ""},
-			{NAME, "quantity"}, {COLON, ""}, {I32, ""}, {COMMA, ""},
-		{RBRACE, ""}, {COMMA, ""},
-		{NAME, "metadata"}, {COLON, ""},
-			{MAP, ""}, {LBRACKET, ""}, {STRING, ""}, {RBRACKET, ""},
-				{DATA, ""}, {COMMA, ""},
-		{RBRACE, ""},
-		{TYPE, ""}, {NAME, "Person"},
-			{LPAREN, ""}, {NAME, "Customer"},
-			{PIPE, ""}, {NAME, "Employee"},
-			{RPAREN, ""},
+		{TTYPE, ""}, {TNAME, "PublicKey"}, {TDATA, ""},
+			{TLANGLE, ""}, {TINTEGER, "128"}, {TRANGLE, ""},
+		{TTYPE, ""}, {TNAME, "Time"}, {TSTRING, ""},
+		{TENUM, ""}, {TNAME, "Department"}, {TE8, ""}, {TLBRACE, ""},
+			{TNAME, "ACCOUNTING"}, {TCOMMA, ""},
+			{TNAME, "ADMINISTRATION"}, {TCOMMA, ""},
+			{TNAME, "CUSTOMER_SERVICE"}, {TCOMMA, ""},
+			{TNAME, "DEVELOPMENT"}, {TCOMMA, ""},
+			{TNAME, "JSMITH"}, {TEQUAL, ""}, {TINTEGER, "99"}, {TCOMMA, ""},
+		{TRBRACE, ""},
+		{TTYPE, ""}, {TNAME, "Customer"}, {TLBRACE, ""},
+		{TNAME, "name"}, {TCOLON, ""}, {TSTRING, ""}, {TCOMMA, ""},
+		{TNAME, "email"}, {TCOLON, ""}, {TSTRING, ""}, {TCOMMA, ""},
+		{TNAME, "address"}, {TCOLON, ""}, {TNAME, "Address"}, {TCOMMA, ""},
+		{TNAME, "orders"}, {TCOLON, ""}, {TLBRACKET, ""}, {TRBRACKET, ""}, {TLBRACE, ""},
+			{TNAME, "orderId"}, {TCOLON, ""}, {TI64, ""}, {TCOMMA, ""},
+			{TNAME, "quantity"}, {TCOLON, ""}, {TI32, ""}, {TCOMMA, ""},
+		{TRBRACE, ""}, {TCOMMA, ""},
+		{TNAME, "metadata"}, {TCOLON, ""},
+			{TMAP, ""}, {TLBRACKET, ""}, {TSTRING, ""}, {TRBRACKET, ""},
+				{TDATA, ""}, {TCOMMA, ""},
+		{TRBRACE, ""},
+		{TTYPE, ""}, {TNAME, "Person"},
+			{TLPAREN, ""}, {TNAME, "Customer"},
+			{TPIPE, ""}, {TNAME, "Employee"},
+			{TRPAREN, ""},
 	}
 	scanner := NewScanner(strings.NewReader(sample))
 	for i, ref := range reference {

@@ -21,61 +21,63 @@ func (e *ErrUnknownToken) Error() string {
 type Token int
 
 const (
-	TYPE Token = iota
-	ENUM
+	TTYPE Token = iota
+	TENUM
 
 	// NAME is used for name, user-type-name, and enum-value-name.
 	// Distinguishing between these requires context.
-	NAME
-	INTEGER
+	TNAME
+	TINTEGER
 
-	U8
-	U16
-	U32
-	U64
-	I8
-	I16
-	I32
-	I64
-	F32
-	F64
-	E8
-	E16
-	E32
-	E64
-	BOOL
-	STRING
-	DATA
-	MAP
-	OPTIONAL
+	TU8
+	TU16
+	TU32
+	TU64
+	TI8
+	TI16
+	TI32
+	TI64
+	TF32
+	TF64
+	TE8
+	TE16
+	TE32
+	TE64
+	TBOOL
+	TSTRING
+	TDATA
+	TMAP
+	TOPTIONAL
 
 	// <
-	LANGLE
+	TLANGLE
 	// >
-	RANGLE
+	TRANGLE
 	// {
-	LBRACE
+	TLBRACE
 	// }
-	RBRACE
+	TRBRACE
 	// [
-	LBRACKET
+	TLBRACKET
 	// ]
-	RBRACKET
+	TRBRACKET
 	// (
-	LPAREN
+	TLPAREN
 	// )
-	RPAREN
+	TRPAREN
 	// ,
-	COMMA
+	TCOMMA
 	// |
-	PIPE
+	TPIPE
 	// =
-	EQUAL
+	TEQUAL
 	// :
-	COLON
+	TCOLON
 )
 
 type Scanner struct {
+	// TODO: track lineno/colno information and attach it to the tokens
+	// returned, for better error reporting
 	br *bufio.Reader
 }
 
@@ -115,29 +117,29 @@ func (sc *Scanner) Next() (Token, string, error) {
 			sc.br.ReadString('\n')
 			continue
 		case '<':
-			return LANGLE, "", nil
+			return TLANGLE, "", nil
 		case '>':
-			return RANGLE, "", nil
+			return TRANGLE, "", nil
 		case '{':
-			return LBRACE, "", nil
+			return TLBRACE, "", nil
 		case '}':
-			return RBRACE, "", nil
+			return TRBRACE, "", nil
 		case '[':
-			return LBRACKET, "", nil
+			return TLBRACKET, "", nil
 		case ']':
-			return RBRACKET, "", nil
+			return TRBRACKET, "", nil
 		case '(':
-			return LPAREN, "", nil
+			return TLPAREN, "", nil
 		case ')':
-			return RPAREN, "", nil
+			return TRPAREN, "", nil
 		case ',':
-			return COMMA, "", nil
+			return TCOMMA, "", nil
 		case '|':
-			return PIPE, "", nil
+			return TPIPE, "", nil
 		case '=':
-			return EQUAL, "", nil
+			return TEQUAL, "", nil
 		case ':':
-			return COLON, "", nil
+			return TCOLON, "", nil
 		}
 
 		return 0, "", &ErrUnknownToken{r}
@@ -169,50 +171,50 @@ func (sc *Scanner) scanWord() (Token, string, error) {
 	tok := buf.String()
 	switch tok {
 	case "type":
-		return TYPE, "", nil
+		return TTYPE, "", nil
 	case "enum":
-		return ENUM, "", nil
+		return TENUM, "", nil
 	case "u8":
-		return U8, "", nil
+		return TU8, "", nil
 	case "u16":
-		return U16, "", nil
+		return TU16, "", nil
 	case "u32":
-		return U32, "", nil
+		return TU32, "", nil
 	case "u64":
-		return U64, "", nil
+		return TU64, "", nil
 	case "i8":
-		return I8, "", nil
+		return TI8, "", nil
 	case "i16":
-		return I16, "", nil
+		return TI16, "", nil
 	case "i32":
-		return I32, "", nil
+		return TI32, "", nil
 	case "i64":
-		return I64, "", nil
+		return TI64, "", nil
 	case "f32":
-		return F32, "", nil
+		return TF32, "", nil
 	case "f64":
-		return F64, "", nil
+		return TF64, "", nil
 	case "bool":
-		return BOOL, "", nil
+		return TBOOL, "", nil
 	case "e8":
-		return E8, "", nil
+		return TE8, "", nil
 	case "e16":
-		return E16, "", nil
+		return TE16, "", nil
 	case "e32":
-		return E32, "", nil
+		return TE32, "", nil
 	case "e64":
-		return E64, "", nil
+		return TE64, "", nil
 	case "string":
-		return STRING, "", nil
+		return TSTRING, "", nil
 	case "data":
-		return DATA, "", nil
+		return TDATA, "", nil
 	case "optional":
-		return OPTIONAL, "", nil
+		return TOPTIONAL, "", nil
 	case "map":
-		return MAP, "", nil
+		return TMAP, "", nil
 	}
 
-	return NAME, tok, nil
+	return TNAME, tok, nil
 }
 
 func (sc *Scanner) scanInteger() (Token, string, error) {
@@ -235,5 +237,5 @@ func (sc *Scanner) scanInteger() (Token, string, error) {
 		}
 	}
 
-	return INTEGER, buf.String(), nil
+	return TINTEGER, buf.String(), nil
 }
