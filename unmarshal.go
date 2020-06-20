@@ -9,7 +9,10 @@ import (
 func Unmarshal(data []byte, val interface{}) error {
 	b := bytes.NewReader(data)
 	r := NewReader(b)
+	return unmarshalReader(r, val)
+}
 
+func unmarshalReader(r *Reader, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
 	if t.Kind() == reflect.Ptr {
@@ -38,7 +41,7 @@ func Unmarshal(data []byte, val interface{}) error {
 
 	// TODO: 
 	// - data, data<len>
-	// - Decode structs, maps, tagged unions
+	// - Decode maps, tagged unions
 
 	var err error
 	switch t.Kind() {
@@ -98,9 +101,21 @@ func Unmarshal(data []byte, val interface{}) error {
 		var s string
 		s, err = r.ReadString()
 		v.SetString(s)
+	case reflect.Struct:
+		return unmarshalStruct(r, t, v)
 	default:
-		// TODO: Unpack structs, custom types
 		return &UnsupportedTypeError{t}
 	}
 	return err
+}
+
+func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
+	for i := 0; i < t.NumField(); i++ {
+		value := v.Field(i)
+		err := unmarshalReader(r, value.Addr().Interface())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

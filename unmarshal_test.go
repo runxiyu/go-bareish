@@ -121,3 +121,18 @@ func TestUnmarshalOptional(t *testing.T) {
 	assert.NotNil(t, val, "Expected Unmarshal to read non-nil value")
 	assert.Equal(t, *val, uint32(0xDEADBEEF), "Expected Unmarshal to read 0xDEADBEEF")
 }
+
+func TestUnmarshalStruct(t *testing.T) {
+	type Coordinates struct { X, Y, Z int }
+	payload := []byte{
+		0x01, 0x00, 0x00, 0x00,
+		0x02, 0x00, 0x00, 0x00,
+		0x03, 0x00, 0x00, 0x00,
+	}
+	var coords Coordinates
+	err := Unmarshal(payload, &coords)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, 1, coords.X, "Expected Unmarshal to read {1, 2, 3}")
+	assert.Equal(t, 2, coords.Y, "Expected Unmarshal to read {1, 2, 3}")
+	assert.Equal(t, 3, coords.Z, "Expected Unmarshal to read {1, 2, 3}")
+}
