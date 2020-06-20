@@ -9,21 +9,33 @@ import (
 	"git.sr.ht/~sircmpwn/go-bare"
 )
 
+// Given a pointer to a value, returns the BARE schema language representation
+// for that value type.
+//
+// var example string
+// schema.SchemaFor(&example); // "string"
+//
+// Given a struct type, if the "bare" tag is found on its fields, it will be
+// used as the field name in the generated schema.
 func SchemaFor(val interface{}) (string, error) {
 	t := reflect.TypeOf(val)
-	return SchemaForType(t)
-}
-
-func SchemaForType(t reflect.Type) (string, error) {
-	// TODO: Implement user-defined types for unparsing schemas from
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	} else {
 		return "", errors.New("Expected val to be pointer type")
 	}
+	return SchemaForType(t)
+}
 
+// Given a reflect.Type, returns the BARE schema language representation for
+// that type.
+//
+// Given a struct type, if the "bare" tag is found on its fields, it will be
+// used as the field name in the generated schema.
+func SchemaForType(t reflect.Type) (string, error) {
+	// TODO: Implement user-defined types for unparsing schemas from
 	if t.Kind() == reflect.Ptr {
-		schema, err := SchemaForType(t)
+		schema, err := SchemaForType(t.Elem())
 		if err != nil {
 			return "", err
 		}
