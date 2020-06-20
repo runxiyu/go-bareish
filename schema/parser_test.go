@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func ParsePrimitives(t *testing.T) {
+func TestParsePrimitives(t *testing.T) {
 	type Reference struct {
 		name string
 		kind TypeKind
@@ -37,8 +37,8 @@ func ParsePrimitives(t *testing.T) {
 		type MyI16 i16
 		type MyI32 i32
 		type MyI64 i64
-		type MyF32 i32
-		type MyF64 i64
+		type MyF32 f32
+		type MyF64 f64
 		type MyBool bool
 		type MyString string
 	`))
@@ -47,7 +47,7 @@ func ParsePrimitives(t *testing.T) {
 
 	for i, ty := range types {
 		ref := reference[i]
-		assert.IsType(t, ty, new(*UserDefinedType))
+		assert.IsType(t, ty, new(UserDefinedType))
 
 		udt := ty.(*UserDefinedType)
 		assert.Equal(t, ref.name, udt.Name())
@@ -55,16 +55,16 @@ func ParsePrimitives(t *testing.T) {
 	}
 }
 
-func ParseOptional(t *testing.T) {
+func TestParseOptional(t *testing.T) {
 	types, err := Parse(strings.NewReader("type MyOptional optional<u32>"))
 	assert.NoError(t, err)
 	assert.Len(t, types, 1)
 
-	assert.IsType(t, new(*UserDefinedType), types[0])
+	assert.IsType(t, new(UserDefinedType), types[0])
 	udt := types[0].(*UserDefinedType)
 	assert.Equal(t, "MyOptional", udt.Name())
 
-	assert.IsType(t, new(*OptionalType), udt.Type())
+	assert.IsType(t, new(OptionalType), udt.Type())
 	ot := udt.Type().(*OptionalType)
-	assert.Equal(t, ot.Subtype().Kind(), U8)
+	assert.Equal(t, U32, ot.Subtype().Kind())
 }
