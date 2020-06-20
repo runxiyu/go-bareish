@@ -1,0 +1,9 @@
+image: alpine/edge
+packages:
+- go
+sources:
+- https://git.sr.ht/~sircmpwn/go-bare
+tasks:
+- test: |
+    cd go-bare
+    go test ./...
