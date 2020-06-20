@@ -109,3 +109,15 @@ func TestUnmarshalValue(t *testing.T) {
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 	assert.Equal(t, str, "こんにちは、世界！", "Expected Unmarshal to read 'こんにちは、世界！'")
 }
+
+func TestUnmarshalOptional(t *testing.T) {
+	var val *uint32
+	err := Unmarshal([]byte{0x00}, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Nil(t, val, "Expected Unmarshal to read nil")
+
+	err = Unmarshal([]byte{0x01, 0xEF, 0xBE, 0xAD, 0xDE}, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.NotNil(t, val, "Expected Unmarshal to read non-nil value")
+	assert.Equal(t, *val, uint32(0xDEADBEEF), "Expected Unmarshal to read 0xDEADBEEF")
+}

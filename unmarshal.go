@@ -19,8 +19,24 @@ func Unmarshal(data []byte, val interface{}) error {
 		return errors.New("Expected val to be pointer type")
 	}
 
+	if t.Kind() == reflect.Ptr {
+		// optional<type>
+		s, err := r.ReadU8()
+		if err != nil {
+			return err
+		}
+
+		if s == 0 {
+			v.Set(reflect.Zero(t))
+			return nil
+		} else {
+			v.Set(reflect.New(t.Elem()))
+			t = t.Elem()
+			v = v.Elem()
+		}
+	}
+
 	// TODO: 
-	// - If it's still a pointer at this point, treat it as optional<type>
 	// - data, data<len>
 	// - Decode structs, maps, tagged unions
 
