@@ -171,3 +171,18 @@ func (sf *StructField) Name() string {
 func (sf *StructField) Type() Type {
 	return sf.type_
 }
+
+// This has not been compared with the list of user-defined types and is not
+// guaranteed to actually exist; the consumer of this type must perform this
+// lookup itself.
+type NamedUserType struct {
+	name string
+}
+
+func (nut *NamedUserType) Kind() TypeKind {
+	return UserType
+}
+
+func (nut *NamedUserType) Name() string {
+	return nut.name
+}

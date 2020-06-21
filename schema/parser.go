@@ -131,7 +131,7 @@ func parseType(scanner *Scanner) (Type, error) {
 		scanner.PushBack(tok)
 		return parseStructType(scanner)
 	case TNAME:
-		panic(errors.New("TODO"))
+		return &NamedUserType{name: tok.Value}, nil
 	}
 
 	return nil, &ErrUnexpectedToken{tok, "type"}

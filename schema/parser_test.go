@@ -170,3 +170,19 @@ func TestParseStruct(t *testing.T) {
 	assert.Equal(t, "z", f.Name())
 	assert.Equal(t, I32, f.Type().Kind())
 }
+
+func TestParseNamedType(t *testing.T) {
+	types, err := Parse(strings.NewReader(`type MyTypeB MyTypeA`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 1)
+
+	ty := types[0]
+	assert.IsType(t, new(UserDefinedType), ty)
+	udt := ty.(*UserDefinedType)
+	assert.Equal(t, "MyTypeB", udt.Name())
+
+	assert.IsType(t, new(NamedUserType), udt.Type())
+	nut := udt.Type().(*NamedUserType)
+	assert.Equal(t, UserType, nut.Kind())
+	assert.Equal(t, "MyTypeA", nut.Name())
+}
