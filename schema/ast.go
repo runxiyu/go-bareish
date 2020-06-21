@@ -20,12 +20,34 @@ func (udt *UserDefinedType) Type() Type {
 }
 
 type UserDefinedEnum struct {
-	name string
-	// TODO: members & values
+	name   string
+	kind   TypeKind
+	values []EnumValue
 }
 
 func (ude *UserDefinedEnum) Name() string {
 	return ude.name
+}
+
+func (ude *UserDefinedEnum) Kind() TypeKind {
+	return ude.kind
+}
+
+func (ude *UserDefinedEnum) Values() []EnumValue {
+	return ude.values
+}
+
+type EnumValue struct {
+	name  string
+	value uint
+}
+
+func (ev *EnumValue) Name() string {
+	return ev.name
+}
+
+func (ev *EnumValue) Value() uint {
+	return ev.value
 }
 
 type TypeKind int

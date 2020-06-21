@@ -186,3 +186,44 @@ func TestParseNamedType(t *testing.T) {
 	assert.Equal(t, UserType, nut.Kind())
 	assert.Equal(t, "MyTypeA", nut.Name())
 }
+
+func TestParseEnumType(t *testing.T) {
+	types, err := Parse(strings.NewReader(`
+		enum MyEnum e8 {
+			ACCOUNTING
+			ADMINISTRATION
+			CUSTOMER_SERVICE
+			DEVELOPMENT
+			JSMITH = 99
+		}
+	`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 1)
+
+	ty := types[0]
+	assert.IsType(t, new(UserDefinedEnum), ty)
+	ude := ty.(*UserDefinedEnum)
+	assert.Equal(t, "MyEnum", ude.Name())
+	assert.Equal(t, E8, ude.Kind())
+
+	assert.Len(t, ude.Values(), 5)
+	val := ude.Values()[0]
+	assert.Equal(t, "ACCOUNTING", val.Name())
+	assert.Equal(t, uint(0), val.Value())
+
+	val = ude.Values()[1]
+	assert.Equal(t, "ADMINISTRATION", val.Name())
+	assert.Equal(t, uint(1), val.Value())
+
+	val = ude.Values()[2]
+	assert.Equal(t, "CUSTOMER_SERVICE", val.Name())
+	assert.Equal(t, uint(2), val.Value())
+
+	val = ude.Values()[3]
+	assert.Equal(t, "DEVELOPMENT", val.Name())
+	assert.Equal(t, uint(3), val.Value())
+
+	val = ude.Values()[4]
+	assert.Equal(t, "JSMITH", val.Name())
+	assert.Equal(t, uint(99), val.Value())
+}

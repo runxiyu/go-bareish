@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -83,7 +82,102 @@ func parseUserType(scanner *Scanner) (SchemaType, error) {
 }
 
 func parseUserEnum(scanner *Scanner) (SchemaType, error) {
-	panic(errors.New("TODO"))
+	tok, err := scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	if tok.Token != TENUM {
+		return nil, &ErrUnexpectedToken{tok, "enum"}
+	}
+
+	var name string
+	tok, err = scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	if tok.Token != TNAME {
+		return nil, &ErrUnexpectedToken{tok, "enum name"}
+	}
+	name = tok.Value
+
+	var kind TypeKind
+	tok, err = scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	switch tok.Token {
+	case TE8:
+		kind = E8
+	case TE16:
+		kind = E16
+	case TE32:
+		kind = E32
+	case TE64:
+		kind = E64
+	default:
+		return nil, &ErrUnexpectedToken{tok, "enum type"}
+	}
+
+	tok, err = scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	if tok.Token != TLBRACE {
+		return nil, &ErrUnexpectedToken{tok, "{"}
+	}
+
+	var value uint
+	var evs []EnumValue
+	for {
+		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+		if tok.Token != TNAME {
+			return nil, &ErrUnexpectedToken{tok, "value name"}
+		}
+
+		var ev EnumValue
+		ev.name = tok.Value
+
+		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+		if tok.Token == TEQUAL {
+			tok, err = scanner.Next()
+			if err != nil {
+				return nil, err
+			}
+			if tok.Token != TINTEGER {
+				return nil, &ErrUnexpectedToken{tok, "integer"}
+			}
+
+			v, _ := strconv.ParseUint(tok.Value, 10, 32)
+			ev.value = uint(v)
+		} else {
+			ev.value = value
+			value += 1
+			scanner.PushBack(tok)
+		}
+
+		evs = append(evs, ev)
+
+		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		if tok.Token == TRBRACE {
+			break
+		} else if tok.Token == TNAME {
+			scanner.PushBack(tok)
+		} else {
+			return nil, &ErrUnexpectedToken{tok, "value name"}
+		}
+	}
+
+	return &UserDefinedEnum{name, kind, evs}, nil
 }
 
 func parseType(scanner *Scanner) (Type, error) {
