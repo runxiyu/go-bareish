@@ -46,8 +46,10 @@ func parseSchemaType(scanner *Scanner) (SchemaType, error) {
 
 	switch tok.Token {
 	case TTYPE:
+		scanner.PushBack(tok)
 		return parseUserType(scanner)
 	case TENUM:
+		scanner.PushBack(tok)
 		return parseUserEnum(scanner)
 	}
 
@@ -56,6 +58,14 @@ func parseSchemaType(scanner *Scanner) (SchemaType, error) {
 
 func parseUserType(scanner *Scanner) (SchemaType, error) {
 	tok, err := scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	if tok.Token != TTYPE {
+		return nil, &ErrUnexpectedToken{tok, "type"}
+	}
+
+	tok, err = scanner.Next()
 	if err != nil {
 		return nil, err
 	}
