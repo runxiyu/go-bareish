@@ -79,7 +79,7 @@ func (w *Writer) WriteString(str string) error {
 	return w.WriteData([]byte(str))
 }
 
-// Reads a fixed amount of arbitrary data, defined by the length of the slice.
+// Writes a fixed amount of arbitrary data, defined by the length of the slice.
 func (w *Writer) WriteDataFixed(data []byte) error {
 	var amt int = 0
 	for amt < len(data) {
@@ -92,7 +92,7 @@ func (w *Writer) WriteDataFixed(data []byte) error {
 	return nil
 }
 
-// Reads arbitrary data whose length is encoded into the message.
+// Writes arbitrary data whose length is encoded into the message.
 func (w *Writer) WriteData(data []byte) error {
 	err := w.WriteU32(uint32(len(data)))
 	if err != nil {
