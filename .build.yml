@@ -4,6 +4,9 @@ packages:
 sources:
 - https://git.sr.ht/~sircmpwn/go-bare
 tasks:
+- gen: |
+    cd go-bare
+    go generate ./...
 - test: |
     cd go-bare
     go test ./...
