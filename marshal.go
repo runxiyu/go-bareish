@@ -11,6 +11,15 @@ import (
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
 // respectively, for message compatibility with both 32-bit and 64-bit systems.
 func Marshal(val interface{}) ([]byte, error) {
+	ctx := NewContext()
+	return ctx.Marshal(val)
+}
+
+// Marshals a value (val, which must be a pointer) into a BARE message.
+//
+// Go "int" and "uint" types are represented as BARE u32 and i32 types
+// respectively, for message compatibility with both 32-bit and 64-bit systems.
+func (ctx *Context) Marshal(val interface{}) ([]byte, error) {
 	b := bytes.NewBuffer([]byte{})
 	w := NewWriter(b)
 	err := MarshalWriter(w, val)
@@ -20,6 +29,13 @@ func Marshal(val interface{}) ([]byte, error) {
 // Marshals a value (val, which must be a pointer) into a BARE message and
 // writes it to a Writer. See Marshal for details.
 func MarshalWriter(w *Writer, val interface{}) error {
+	ctx := NewContext()
+	return ctx.MarshalWriter(w, val)
+}
+
+// Marshals a value (val, which must be a pointer) into a BARE message and
+// writes it to a Writer. See Marshal for details.
+func (ctx *Context) MarshalWriter(w *Writer, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
 	if t.Kind() == reflect.Ptr {
@@ -30,10 +46,11 @@ func MarshalWriter(w *Writer, val interface{}) error {
 			t.Kind().String())
 	}
 
-	return marshalWriter(w, t, v)
+	return ctx.marshalWriter(w, t, v)
 }
 
-func marshalWriter(w *Writer, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) marshalWriter(w *Writer,
+	t reflect.Type, v reflect.Value) error {
 	if t.Kind() == reflect.Ptr {
 		// optional<type>
 		var set uint8
@@ -49,6 +66,15 @@ func marshalWriter(w *Writer, t reflect.Type, v reflect.Value) error {
 		if set == 0 {
 			return nil
 		}
+	}
+
+	if union, ok := v.Interface().(Union); ok {
+		err := w.WriteU8(union.UnionTag())
+		if err != nil {
+			return err
+		}
+		v = reflect.ValueOf(union)
+		t = v.Type()
 	}
 
 	// TODO: unions; custom encoders
@@ -82,21 +108,23 @@ func marshalWriter(w *Writer, t reflect.Type, v reflect.Value) error {
 	case reflect.String:
 		return w.WriteString(v.String())
 	case reflect.Array:
-		return marshalArray(w, t, v)
+		return ctx.marshalArray(w, t, v)
 	case reflect.Slice:
-		return marshalSlice(w, t, v)
+		return ctx.marshalSlice(w, t, v)
 	case reflect.Struct:
-		return marshalStruct(w, t, v)
+		return ctx.marshalStruct(w, t, v)
 	case reflect.Map:
-		return marshalMap(w, t, v)
+		return ctx.marshalMap(w, t, v)
 	}
+
 	return &UnsupportedTypeError{t}
 }
 
-func marshalStruct(w *Writer, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) marshalStruct(w *Writer,
+	t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.NumField(); i++ {
 		value := v.Field(i)
-		err := MarshalWriter(w, value.Addr().Interface())
+		err := ctx.MarshalWriter(w, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -104,10 +132,11 @@ func marshalStruct(w *Writer, t reflect.Type, v reflect.Value) error {
 	return nil
 }
 
-func marshalArray(w *Writer, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) marshalArray(w *Writer,
+	t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.Len(); i++ {
 		value := v.Index(i)
-		err := MarshalWriter(w, value.Addr().Interface())
+		err := ctx.MarshalWriter(w, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -115,14 +144,15 @@ func marshalArray(w *Writer, t reflect.Type, v reflect.Value) error {
 	return nil
 }
 
-func marshalSlice(w *Writer, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) marshalSlice(w *Writer,
+	t reflect.Type, v reflect.Value) error {
 	err := w.WriteU32(uint32(v.Len()))
 	if err != nil {
 		return err
 	}
 	for i := 0; i < v.Len(); i++ {
 		value := v.Index(i)
-		err := MarshalWriter(w, value.Addr().Interface())
+		err := ctx.MarshalWriter(w, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -130,18 +160,19 @@ func marshalSlice(w *Writer, t reflect.Type, v reflect.Value) error {
 	return nil
 }
 
-func marshalMap(w *Writer, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) marshalMap(w *Writer,
+	t reflect.Type, v reflect.Value) error {
 	err := w.WriteU32(uint32(v.Len()))
 	if err != nil {
 		return err
 	}
 	for _, key := range v.MapKeys() {
 		value := v.MapIndex(key)
-		err := marshalWriter(w, key.Type(), key)
+		err := ctx.marshalWriter(w, key.Type(), key)
 		if err != nil {
 			return err
 		}
-		err = marshalWriter(w, value.Type(), value)
+		err = ctx.marshalWriter(w, value.Type(), value)
 		if err != nil {
 			return err
 		}

@@ -214,3 +214,36 @@ func TestMarshalMap(t *testing.T) {
 	}
 	assert.True(t, found, "%x does not match reference", data)
 }
+
+type NameAge interface {
+	Union
+}
+
+type Name string
+
+func (n Name) UnionTag() uint8 {
+	return 0
+}
+
+type Age int
+
+func (a Age) UnionTag() uint8 {
+	return 1
+}
+
+func TestMarshalUnion(t *testing.T) {
+	var na NameAge = Name("Mary")
+	ctx := NewContext()
+	ctx.RegisterUnion(&na, *new(Name), *new(Age))
+
+	data, err := ctx.Marshal(&na)
+	assert.Nil(t, err)
+	reference := []byte{0x00, 0x04, 0x00, 0x00, 0x00, 0x4d, 0x61, 0x72, 0x79}
+	assert.Equal(t, reference, data)
+
+	na = Age(24)
+	data, err = ctx.Marshal(&na)
+	assert.Nil(t, err)
+	reference = []byte{0x01, 0x18, 0x00, 0x00, 0x00}
+	assert.Equal(t, reference, data)
+}
