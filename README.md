@@ -3,6 +3,10 @@
 An implementation of the [BARE](https://git.sr.ht/~sircmpwn/bare) message format
 for Go.
 
+**Status**
+
+This mostly works, but you may run into some edge cases with union types.
+
 ## Code generation
 
 An example is provided in the `examples` directory. Here is a basic
@@ -122,3 +126,8 @@ func init() {
 ```
 
 This is all done for you if you use code generation.
+
+## Contributing, getting help
+
+Send patches and questions to
+[~sircmpwn/public-inbox@lists.sr.ht](mailto:~sircmpwn/public-inbox@lists.sr.ht)
