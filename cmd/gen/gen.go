@@ -9,7 +9,13 @@ import (
 )
 
 func genTypes(w io.Writer, types []schema.SchemaType) {
-	fmt.Fprintf(w, "\nimport \"git.sr.ht/~sircmpwn/go-bare\"\n")
+	fmt.Fprintf(w, `
+import (
+	"errors"
+
+	"git.sr.ht/~sircmpwn/go-bare"
+)
+`)
 
 	for _, ty := range types {
 		switch ty := ty.(type) {
@@ -43,6 +49,16 @@ func genUserEnum(w io.Writer, ude *schema.UserDefinedEnum) {
 		}
 	}
 	fmt.Fprintf(w, "\n)\n")
+
+	fmt.Fprintf(w, "\nfunc (t *%s) String() string {", ude.Name())
+	fmt.Fprintf(w, "\n\tswitch (t) {")
+	for _, val := range ude.Values() {
+		fmt.Fprintf(w, "\n\tcase %s:", val.Name())
+		fmt.Fprintf(w, "\n\t\treturn \"%s\"", val.Name())
+	}
+	fmt.Fprintf(w, "\n\t}")
+	fmt.Fprintf(w, "\n\tpanic(errors.New(\"Invalid %s value\"))", ude.Name())
+	fmt.Fprintf(w, "\n}\n")
 }
 
 func genType(w io.Writer, ty schema.Type, indent int) {
