@@ -35,6 +35,10 @@ func genUserType(w io.Writer, udt *schema.UserDefinedType) {
 	fmt.Fprintf(w, "\nfunc (t *%s) Decode(data []byte) error {", udt.Name())
 	fmt.Fprintf(w, "\n\treturn bare.Unmarshal(data, t)")
 	fmt.Fprintf(w, "\n}\n")
+
+	fmt.Fprintf(w, "\nfunc (t *%s) Encode() ([]byte, error) {", udt.Name())
+	fmt.Fprintf(w, "\n\treturn bare.Marshal(t)")
+	fmt.Fprintf(w, "\n}\n")
 }
 
 func genUserEnum(w io.Writer, ude *schema.UserDefinedEnum) {
