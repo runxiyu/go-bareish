@@ -32,8 +32,8 @@ func genUserType(w io.Writer, udt *schema.UserDefinedType) {
 	genType(w, udt.Type(), 0)
 	fmt.Fprintf(w, "\n")
 
-	fmt.Fprintf(w, "\nfunc (t *%s) Decode(data []byte) {", udt.Name())
-	fmt.Fprintf(w, "\n\tbare.Unmarshal(data, t)")
+	fmt.Fprintf(w, "\nfunc (t *%s) Decode(data []byte) error {", udt.Name())
+	fmt.Fprintf(w, "\n\treturn bare.Unmarshal(data, t)")
 	fmt.Fprintf(w, "\n}\n")
 }
 
