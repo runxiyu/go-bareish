@@ -7,6 +7,12 @@ import (
 	"reflect"
 )
 
+// A type which implements this interface will be responsible for unmarshaling
+// itself when encountered.
+type Unmarshalable interface {
+	Unmarshal(r *Reader) error
+}
+
 // Unmarshals a BARE message into val, which must be a pointer to a value of
 // the message type.
 //
@@ -47,7 +53,8 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		}
 	}
 
-	if v.Type().Implements(reflect.TypeOf((*Union)(nil)).Elem()) {
+	if t.Kind() == reflect.Interface &&
+		v.Type().Implements(reflect.TypeOf((*Union)(nil)).Elem()) {
 		ut, ok := unionRegistry[t]
 		if !ok {
 			return fmt.Errorf("Union type %s is not registered", t.Name())
@@ -65,6 +72,10 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		v.Set(nv)
 		v = nv.Elem()
 		t = v.Type()
+	}
+
+	if unmarshal, ok := v.Addr().Interface().(Unmarshalable); ok {
+		return unmarshal.Unmarshal(r)
 	}
 
 	// TODO: custom encoders

@@ -7,6 +7,12 @@ import (
 	"reflect"
 )
 
+// A type which implements this interface will be responsible for marshaling
+// itself when encountered.
+type Marshalable interface {
+	Marshal(w *Writer) error
+}
+
 // Marshals a value (val, which must be a pointer) into a BARE message.
 //
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
@@ -53,7 +59,8 @@ func marshalWriter(w *Writer,
 		}
 	}
 
-	if union, ok := v.Interface().(Union); ok {
+	if t.Kind() == reflect.Interface &&
+		v.Type().Implements(reflect.TypeOf((*Union)(nil)).Elem()) {
 		ut, ok := unionRegistry[t]
 		if !ok {
 			return fmt.Errorf("Union type %s is not registered", t.Name())
@@ -75,8 +82,12 @@ func marshalWriter(w *Writer,
 		if err != nil {
 			return err
 		}
-		v = reflect.ValueOf(union)
+		v = reflect.ValueOf(v.Interface())
 		t = v.Type()
+	}
+
+	if marshal, ok := v.Addr().Interface().(Marshalable); ok {
+		return marshal.Marshal(w)
 	}
 
 	// TODO: custom encoders
