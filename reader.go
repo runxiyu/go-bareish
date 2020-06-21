@@ -5,10 +5,12 @@ import (
 	"io"
 )
 
+// A Reader for BARE primitive types.
 type Reader struct {
 	base io.Reader
 }
 
+// Returns a new BARE primitive reader wrapping the given io.Reader.
 func NewReader(base io.Reader) *Reader {
 	return &Reader{base}
 }
@@ -132,5 +134,4 @@ func (r *Reader) ReadData() ([]byte, error) {
 		amt += uint32(n)
 	}
 	return buf, nil
-
 }
