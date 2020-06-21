@@ -1,2 +1,2 @@
     go generate ./...
-    go run .
+    go run . < customer.bin
