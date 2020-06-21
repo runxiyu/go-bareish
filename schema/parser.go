@@ -7,7 +7,12 @@ import (
 	"strconv"
 )
 
-var userTypeNameRE = regexp.MustCompile(`[A-Z][A-Za-z0-9]+`)
+var (
+	userTypeNameRE = regexp.MustCompile(`[A-Z][A-Za-z0-9]*`)
+	userEnumNameRE = regexp.MustCompile(`[A-Z][A-Za-z0-9]*`)
+	fieldNameRE = regexp.MustCompile(`[a-z][A-Za-z0-9]*`)
+	enumValueRE = regexp.MustCompile(`[A-Z][A-Z0-9_]*`)
+)
 
 // Returned when the lexer encounters an unexpected token
 type ErrUnexpectedToken struct {
@@ -78,6 +83,10 @@ func parseUserType(scanner *Scanner) (SchemaType, error) {
 		return nil, err
 	}
 
+	if !userTypeNameRE.MatchString(udt.Name()) {
+		return nil, fmt.Errorf("Invalid name for user type %s", udt.Name())
+	}
+
 	return udt, nil
 }
 
@@ -139,6 +148,9 @@ func parseUserEnum(scanner *Scanner) (SchemaType, error) {
 
 		var ev EnumValue
 		ev.name = tok.Value
+		if !enumValueRE.MatchString(ev.name) {
+			return nil, fmt.Errorf("Invalid name for enum value %s", ev.name)
+		}
 
 		tok, err = scanner.Next()
 		if err != nil {
@@ -175,6 +187,10 @@ func parseUserEnum(scanner *Scanner) (SchemaType, error) {
 		} else {
 			return nil, &ErrUnexpectedToken{tok, "value name"}
 		}
+	}
+
+	if !userEnumNameRE.MatchString(name) {
+		return nil, fmt.Errorf("Invalid name for user enum %s", name)
 	}
 
 	return &UserDefinedEnum{name, kind, evs}, nil
@@ -452,6 +468,9 @@ func parseStructType(scanner *Scanner) (Type, error) {
 		}
 
 		sf.name = tok.Value
+		if !fieldNameRE.MatchString(sf.name) {
+			return nil, fmt.Errorf("Invalid name for field %s", sf.name)
+		}
 
 		tok, err = scanner.Next()
 		if err != nil {
