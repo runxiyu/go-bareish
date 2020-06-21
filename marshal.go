@@ -22,7 +22,7 @@ func Marshal(val interface{}) ([]byte, error) {
 func (ctx *Context) Marshal(val interface{}) ([]byte, error) {
 	b := bytes.NewBuffer([]byte{})
 	w := NewWriter(b)
-	err := MarshalWriter(w, val)
+	err := ctx.MarshalWriter(w, val)
 	return b.Bytes(), err
 }
 
@@ -77,7 +77,7 @@ func (ctx *Context) marshalWriter(w *Writer,
 		t = v.Type()
 	}
 
-	// TODO: unions; custom encoders
+	// TODO: custom encoders
 	switch t.Kind() {
 	case reflect.Uint8:
 		return w.WriteU8(uint8(v.Uint()))

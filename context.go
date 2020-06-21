@@ -10,10 +10,13 @@ type Union interface {
 	UnionTag() uint8
 }
 
+// A marshal context, which stores an internal register of union types.
 type Context struct {
 	unions map[reflect.Type][]reflect.Type
 }
 
+// Creates a new marshal context. The use of a context is only required if you
+// are working with a schema that uses union types.
 func NewContext() *Context {
 	return &Context{
 		unions: make(map[reflect.Type][]reflect.Type),

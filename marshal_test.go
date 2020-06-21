@@ -232,17 +232,17 @@ func (a Age) UnionTag() uint8 {
 }
 
 func TestMarshalUnion(t *testing.T) {
-	var na NameAge = Name("Mary")
+	var val NameAge = Name("Mary")
 	ctx := NewContext()
-	ctx.RegisterUnion(&na, *new(Name), *new(Age))
+	ctx.RegisterUnion(&val, *new(Name), *new(Age))
 
-	data, err := ctx.Marshal(&na)
+	data, err := ctx.Marshal(&val)
 	assert.Nil(t, err)
 	reference := []byte{0x00, 0x04, 0x00, 0x00, 0x00, 0x4d, 0x61, 0x72, 0x79}
 	assert.Equal(t, reference, data)
 
-	na = Age(24)
-	data, err = ctx.Marshal(&na)
+	val = Age(24)
+	data, err = ctx.Marshal(&val)
 	assert.Nil(t, err)
 	reference = []byte{0x01, 0x18, 0x00, 0x00, 0x00}
 	assert.Equal(t, reference, data)

@@ -173,3 +173,24 @@ func TestUnmarshalMap(t *testing.T) {
 	assert.Equal(t, uint8(0x22), val[uint8(0x02)], "Expected Unmarshal to read 0x02 -> 0x22")
 	assert.Equal(t, uint8(0x33), val[uint8(0x03)], "Expected Unmarshal to read 0x03 -> 0x33")
 }
+
+func TestUnmarshalUnion(t *testing.T) {
+	var val NameAge
+	ctx := NewContext()
+	ctx.RegisterUnion(&val, *new(Name), *new(Age))
+	payload := []byte{0x00, 0x04, 0x00, 0x00, 0x00, 0x4d, 0x61, 0x72, 0x79}
+	err := ctx.Unmarshal(payload, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+
+	name, ok := val.(*Name)
+	assert.True(t, ok)
+	assert.Equal(t, Name("Mary"), *name)
+
+	payload = []byte{0x01, 0x18, 0x00, 0x00, 0x00}
+	err = ctx.Unmarshal(payload, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+
+	age, ok := val.(*Age)
+	assert.True(t, ok)
+	assert.Equal(t, Age(24), *age)
+}

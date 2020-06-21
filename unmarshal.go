@@ -3,6 +3,7 @@ package bare
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -12,14 +13,31 @@ import (
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
 // respectively, for message compatibility with both 32-bit and 64-bit systems.
 func Unmarshal(data []byte, val interface{}) error {
+	ctx := NewContext()
+	return ctx.Unmarshal(data, val)
+}
+
+// Unmarshals a BARE message into val, which must be a pointer to a value of
+// the message type.
+//
+// Go "int" and "uint" types are represented as BARE u32 and i32 types
+// respectively, for message compatibility with both 32-bit and 64-bit systems.
+func (ctx *Context) Unmarshal(data []byte, val interface{}) error {
 	b := bytes.NewReader(data)
 	r := NewReader(b)
-	return UnmarshalReader(r, val)
+	return ctx.UnmarshalReader(r, val)
 }
 
 // Unmarshals a BARE message into value (val, which must be a pointer), from a
 // reader. See Unmarshal for details.
 func UnmarshalReader(r *Reader, val interface{}) error {
+	ctx := NewContext()
+	return ctx.UnmarshalReader(r, val)
+}
+
+// Unmarshals a BARE message into value (val, which must be a pointer), from a
+// reader. See Unmarshal for details.
+func (ctx *Context) UnmarshalReader(r *Reader, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
 	if t.Kind() == reflect.Ptr {
@@ -46,7 +64,27 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		}
 	}
 
-	// TODO: unions; custom encoders
+	if v.Type().Implements(reflect.TypeOf((*Union)(nil)).Elem()) {
+		ut, ok := ctx.unions[t]
+		if !ok {
+			return fmt.Errorf("Union type %s is not registered in this context", t.Name())
+		}
+
+		tag, err := r.ReadU8()
+		if err != nil {
+			return err
+		}
+
+		if int(tag) >= len(ut) {
+			return fmt.Errorf("Invalid union tag %d for type %s", tag, t.Name())
+		}
+		nv := reflect.New(ut[tag])
+		v.Set(nv)
+		v = nv.Elem()
+		t = v.Type()
+	}
+
+	// TODO: custom encoders
 	var err error
 	switch t.Kind() {
 	case reflect.Uint8:
@@ -106,23 +144,24 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		s, err = r.ReadString()
 		v.SetString(s)
 	case reflect.Array:
-		return unmarshalArray(r, t, v)
+		return ctx.unmarshalArray(r, t, v)
 	case reflect.Slice:
-		return unmarshalSlice(r, t, v)
+		return ctx.unmarshalSlice(r, t, v)
 	case reflect.Struct:
-		return unmarshalStruct(r, t, v)
+		return ctx.unmarshalStruct(r, t, v)
 	case reflect.Map:
-		return unmarshalMap(r, t, v)
+		return ctx.unmarshalMap(r, t, v)
 	default:
 		return &UnsupportedTypeError{t}
 	}
 	return err
 }
 
-func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) unmarshalStruct(r *Reader,
+	t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.NumField(); i++ {
 		value := v.Field(i)
-		err := UnmarshalReader(r, value.Addr().Interface())
+		err := ctx.UnmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -130,10 +169,11 @@ func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalArray(r *Reader, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) unmarshalArray(r *Reader,
+	t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.Len(); i++ {
 		value := v.Index(i)
-		err := UnmarshalReader(r, value.Addr().Interface())
+		err := ctx.UnmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -141,7 +181,8 @@ func unmarshalArray(r *Reader, t reflect.Type, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) unmarshalSlice(r *Reader,
+	t reflect.Type, v reflect.Value) error {
 	l, err := r.ReadU32()
 	if err != nil {
 		return err
@@ -149,7 +190,7 @@ func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
 	slice := reflect.MakeSlice(t, int(l), int(l))
 	for i := 0; i < int(l); i++ {
 		value := slice.Index(i)
-		err := UnmarshalReader(r, value.Addr().Interface())
+		err := ctx.UnmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -158,7 +199,8 @@ func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
 	return nil
 }
 
-func unmarshalMap(r *Reader, t reflect.Type, v reflect.Value) error {
+func (ctx *Context) unmarshalMap(r *Reader,
+	t reflect.Type, v reflect.Value) error {
 	l, err := r.ReadU32()
 	if err != nil {
 		return err
@@ -167,11 +209,11 @@ func unmarshalMap(r *Reader, t reflect.Type, v reflect.Value) error {
 	for i := 0; i < int(l); i++ {
 		key := reflect.New(t.Key())
 		value := reflect.New(t.Elem())
-		err := UnmarshalReader(r, key.Interface())
+		err := ctx.UnmarshalReader(r, key.Interface())
 		if err != nil {
 			return err
 		}
-		err = UnmarshalReader(r, value.Interface())
+		err = ctx.UnmarshalReader(r, value.Interface())
 		if err != nil {
 			return err
 		}
