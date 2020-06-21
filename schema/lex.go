@@ -76,8 +76,6 @@ func (sc *Scanner) Next() (Token, error) {
 			return Token{TLPAREN, ""}, nil
 		case ')':
 			return Token{TRPAREN, ""}, nil
-		case ',':
-			return Token{TCOMMA, ""}, nil
 		case '|':
 			return Token{TPIPE, ""}, nil
 		case '=':
@@ -252,8 +250,6 @@ const (
 	TLPAREN
 	// )
 	TRPAREN
-	// ,
-	TCOMMA
 	// |
 	TPIPE
 	// =
@@ -326,8 +322,6 @@ func (t Token) String() string {
 		return "("
 	case TRPAREN:
 		return ")"
-	case TCOMMA:
-		return ","
 	case TPIPE:
 		return "|"
 	case TEQUAL:

@@ -91,24 +91,24 @@ func TestScanSample(t *testing.T) {
 	type Time string # ISO T8601
 
 	enum Department e8 {
-		ACCOUNTING,
-		ADMINISTRATION,
-		CUSTOMER_SERVICE,
-		DEVELOPMENT,
+		ACCOUNTING
+		ADMINISTRATION
+		CUSTOMER_SERVICE
+		DEVELOPMENT
 
 		# Reserved for the CEO
-		JSMITH = 99,
+		JSMITH = 99
 	}
 
 	type Customer {
-		name: string,
-		email: string,
-		address: Address,
+		name: string
+		email: string
+		address: Address
 		orders: []{
-			orderId: i64,
-			quantity: i32,
-		},
-		metadata: map[string]data,
+			orderId: i64
+			quantity: i32
+		}
+		metadata: map[string]data
 	}
 
 	type Person (Customer | Employee)`
@@ -117,23 +117,23 @@ func TestScanSample(t *testing.T) {
 			{TLANGLE, ""}, {TINTEGER, "128"}, {TRANGLE, ""},
 		{TTYPE, ""}, {TNAME, "Time"}, {TSTRING, ""},
 		{TENUM, ""}, {TNAME, "Department"}, {TE8, ""}, {TLBRACE, ""},
-			{TNAME, "ACCOUNTING"}, {TCOMMA, ""},
-			{TNAME, "ADMINISTRATION"}, {TCOMMA, ""},
-			{TNAME, "CUSTOMER_SERVICE"}, {TCOMMA, ""},
-			{TNAME, "DEVELOPMENT"}, {TCOMMA, ""},
-			{TNAME, "JSMITH"}, {TEQUAL, ""}, {TINTEGER, "99"}, {TCOMMA, ""},
+			{TNAME, "ACCOUNTING"},
+			{TNAME, "ADMINISTRATION"},
+			{TNAME, "CUSTOMER_SERVICE"},
+			{TNAME, "DEVELOPMENT"},
+			{TNAME, "JSMITH"}, {TEQUAL, ""}, {TINTEGER, "99"},
 		{TRBRACE, ""},
 		{TTYPE, ""}, {TNAME, "Customer"}, {TLBRACE, ""},
-		{TNAME, "name"}, {TCOLON, ""}, {TSTRING, ""}, {TCOMMA, ""},
-		{TNAME, "email"}, {TCOLON, ""}, {TSTRING, ""}, {TCOMMA, ""},
-		{TNAME, "address"}, {TCOLON, ""}, {TNAME, "Address"}, {TCOMMA, ""},
+		{TNAME, "name"}, {TCOLON, ""}, {TSTRING, ""},
+		{TNAME, "email"}, {TCOLON, ""}, {TSTRING, ""},
+		{TNAME, "address"}, {TCOLON, ""}, {TNAME, "Address"},
 		{TNAME, "orders"}, {TCOLON, ""}, {TLBRACKET, ""}, {TRBRACKET, ""}, {TLBRACE, ""},
-			{TNAME, "orderId"}, {TCOLON, ""}, {TI64, ""}, {TCOMMA, ""},
-			{TNAME, "quantity"}, {TCOLON, ""}, {TI32, ""}, {TCOMMA, ""},
-		{TRBRACE, ""}, {TCOMMA, ""},
+			{TNAME, "orderId"}, {TCOLON, ""}, {TI64, ""},
+			{TNAME, "quantity"}, {TCOLON, ""}, {TI32, ""},
+		{TRBRACE, ""},
 		{TNAME, "metadata"}, {TCOLON, ""},
 			{TMAP, ""}, {TLBRACKET, ""}, {TSTRING, ""}, {TRBRACKET, ""},
-				{TDATA, ""}, {TCOMMA, ""},
+				{TDATA, ""},
 		{TRBRACE, ""},
 		{TTYPE, ""}, {TNAME, "Person"},
 			{TLPAREN, ""}, {TNAME, "Customer"},
