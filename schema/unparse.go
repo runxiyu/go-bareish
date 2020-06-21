@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"regexp"
 
 	"git.sr.ht/~sircmpwn/go-bare"
 )
@@ -75,6 +76,8 @@ func SchemaForType(t reflect.Type) (string, error) {
 	}
 }
 
+var tagFieldNameRE = regexp.MustCompile(`"[a-z][A-Za-z0-9]*"`)
+
 func schemaForStruct(t reflect.Type) (string, error) {
 	buf := bytes.NewBufferString("{\n")
 	for i := 0; i < t.NumField(); i++ {
@@ -83,9 +86,13 @@ func schemaForStruct(t reflect.Type) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		// TODO: Convert Go names into valid schema names
 		name := field.Name
 		if tag, ok := field.Tag.Lookup("bare"); ok {
-			name = tag
+			name = tagFieldNameRE.FindString(tag)
+			if name == "" {
+				name = field.Name
+			}
 		}
 		buf.WriteString(fmt.Sprintf("\t%s: %s\n", name, schema))
 	}
