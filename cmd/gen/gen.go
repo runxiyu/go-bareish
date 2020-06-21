@@ -50,7 +50,7 @@ func genUserEnum(w io.Writer, ude *schema.UserDefinedEnum) {
 	}
 	fmt.Fprintf(w, "\n)\n")
 
-	fmt.Fprintf(w, "\nfunc (t *%s) String() string {", ude.Name())
+	fmt.Fprintf(w, "\nfunc (t %s) String() string {", ude.Name())
 	fmt.Fprintf(w, "\n\tswitch (t) {")
 	for _, val := range ude.Values() {
 		fmt.Fprintf(w, "\n\tcase %s:", val.Name())
