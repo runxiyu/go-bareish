@@ -38,7 +38,7 @@ Address:
 	%s, %s
 	%s
 Orders:
-	`, person.Name, person.Email, strings.Join(addrs, "\n"),
+`, person.Name, person.Email, strings.Join(addrs, "\n"),
 		person.Address.City, person.Address.State,
 		person.Address.Country)
 		for _, order := range person.Orders {
