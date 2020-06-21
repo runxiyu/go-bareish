@@ -176,10 +176,8 @@ func TestUnmarshalMap(t *testing.T) {
 
 func TestUnmarshalUnion(t *testing.T) {
 	var val NameAge
-	ctx := NewContext()
-	ctx.RegisterUnion(&val, *new(Name), *new(Age))
 	payload := []byte{0x00, 0x04, 0x00, 0x00, 0x00, 0x4d, 0x61, 0x72, 0x79}
-	err := ctx.Unmarshal(payload, &val)
+	err := Unmarshal(payload, &val)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 
 	name, ok := val.(*Name)
@@ -187,7 +185,7 @@ func TestUnmarshalUnion(t *testing.T) {
 	assert.Equal(t, Name("Mary"), *name)
 
 	payload = []byte{0x01, 0x18, 0x00, 0x00, 0x00}
-	err = ctx.Unmarshal(payload, &val)
+	err = Unmarshal(payload, &val)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 
 	age, ok := val.(*Age)

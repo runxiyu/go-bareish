@@ -11,31 +11,15 @@ import (
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
 // respectively, for message compatibility with both 32-bit and 64-bit systems.
 func Marshal(val interface{}) ([]byte, error) {
-	ctx := NewContext()
-	return ctx.Marshal(val)
-}
-
-// Marshals a value (val, which must be a pointer) into a BARE message.
-//
-// Go "int" and "uint" types are represented as BARE u32 and i32 types
-// respectively, for message compatibility with both 32-bit and 64-bit systems.
-func (ctx *Context) Marshal(val interface{}) ([]byte, error) {
 	b := bytes.NewBuffer([]byte{})
 	w := NewWriter(b)
-	err := ctx.MarshalWriter(w, val)
+	err := MarshalWriter(w, val)
 	return b.Bytes(), err
 }
 
 // Marshals a value (val, which must be a pointer) into a BARE message and
 // writes it to a Writer. See Marshal for details.
 func MarshalWriter(w *Writer, val interface{}) error {
-	ctx := NewContext()
-	return ctx.MarshalWriter(w, val)
-}
-
-// Marshals a value (val, which must be a pointer) into a BARE message and
-// writes it to a Writer. See Marshal for details.
-func (ctx *Context) MarshalWriter(w *Writer, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
 	if t.Kind() == reflect.Ptr {
@@ -46,10 +30,10 @@ func (ctx *Context) MarshalWriter(w *Writer, val interface{}) error {
 			t.Kind().String())
 	}
 
-	return ctx.marshalWriter(w, t, v)
+	return marshalWriter(w, t, v)
 }
 
-func (ctx *Context) marshalWriter(w *Writer,
+func marshalWriter(w *Writer,
 	t reflect.Type, v reflect.Value) error {
 	if t.Kind() == reflect.Ptr {
 		// optional<type>
@@ -108,23 +92,22 @@ func (ctx *Context) marshalWriter(w *Writer,
 	case reflect.String:
 		return w.WriteString(v.String())
 	case reflect.Array:
-		return ctx.marshalArray(w, t, v)
+		return marshalArray(w, t, v)
 	case reflect.Slice:
-		return ctx.marshalSlice(w, t, v)
+		return marshalSlice(w, t, v)
 	case reflect.Struct:
-		return ctx.marshalStruct(w, t, v)
+		return marshalStruct(w, t, v)
 	case reflect.Map:
-		return ctx.marshalMap(w, t, v)
+		return marshalMap(w, t, v)
 	}
 
 	return &UnsupportedTypeError{t}
 }
 
-func (ctx *Context) marshalStruct(w *Writer,
-	t reflect.Type, v reflect.Value) error {
+func marshalStruct(w *Writer, t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.NumField(); i++ {
 		value := v.Field(i)
-		err := ctx.MarshalWriter(w, value.Addr().Interface())
+		err := MarshalWriter(w, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -132,11 +115,10 @@ func (ctx *Context) marshalStruct(w *Writer,
 	return nil
 }
 
-func (ctx *Context) marshalArray(w *Writer,
-	t reflect.Type, v reflect.Value) error {
+func marshalArray(w *Writer, t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.Len(); i++ {
 		value := v.Index(i)
-		err := ctx.MarshalWriter(w, value.Addr().Interface())
+		err := MarshalWriter(w, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -144,15 +126,14 @@ func (ctx *Context) marshalArray(w *Writer,
 	return nil
 }
 
-func (ctx *Context) marshalSlice(w *Writer,
-	t reflect.Type, v reflect.Value) error {
+func marshalSlice(w *Writer, t reflect.Type, v reflect.Value) error {
 	err := w.WriteU32(uint32(v.Len()))
 	if err != nil {
 		return err
 	}
 	for i := 0; i < v.Len(); i++ {
 		value := v.Index(i)
-		err := ctx.MarshalWriter(w, value.Addr().Interface())
+		err := MarshalWriter(w, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -160,19 +141,18 @@ func (ctx *Context) marshalSlice(w *Writer,
 	return nil
 }
 
-func (ctx *Context) marshalMap(w *Writer,
-	t reflect.Type, v reflect.Value) error {
+func marshalMap(w *Writer, t reflect.Type, v reflect.Value) error {
 	err := w.WriteU32(uint32(v.Len()))
 	if err != nil {
 		return err
 	}
 	for _, key := range v.MapKeys() {
 		value := v.MapIndex(key)
-		err := ctx.marshalWriter(w, key.Type(), key)
+		err := marshalWriter(w, key.Type(), key)
 		if err != nil {
 			return err
 		}
-		err = ctx.marshalWriter(w, value.Type(), value)
+		err = marshalWriter(w, value.Type(), value)
 		if err != nil {
 			return err
 		}

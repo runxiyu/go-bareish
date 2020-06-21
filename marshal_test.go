@@ -7,6 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	RegisterUnion((*NameAge)(nil), *new(Name), *new(Age))
+}
+
+type Name string
+type Age int
+
+type NameAge interface { Union }
+func (n Name) UnionTag() uint8 { return 0 }
+func (a Age) UnionTag() uint8 { return 1 }
+
 func TestMarshalValue(t *testing.T) {
 	var (
 		data []byte
@@ -215,34 +226,15 @@ func TestMarshalMap(t *testing.T) {
 	assert.True(t, found, "%x does not match reference", data)
 }
 
-type NameAge interface {
-	Union
-}
-
-type Name string
-
-func (n Name) UnionTag() uint8 {
-	return 0
-}
-
-type Age int
-
-func (a Age) UnionTag() uint8 {
-	return 1
-}
-
 func TestMarshalUnion(t *testing.T) {
 	var val NameAge = Name("Mary")
-	ctx := NewContext()
-	ctx.RegisterUnion(&val, *new(Name), *new(Age))
-
-	data, err := ctx.Marshal(&val)
+	data, err := Marshal(&val)
 	assert.Nil(t, err)
 	reference := []byte{0x00, 0x04, 0x00, 0x00, 0x00, 0x4d, 0x61, 0x72, 0x79}
 	assert.Equal(t, reference, data)
 
 	val = Age(24)
-	data, err = ctx.Marshal(&val)
+	data, err = Marshal(&val)
 	assert.Nil(t, err)
 	reference = []byte{0x01, 0x18, 0x00, 0x00, 0x00}
 	assert.Equal(t, reference, data)

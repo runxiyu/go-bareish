@@ -43,6 +43,49 @@ func main() {
 }
 ```
 
+### Unions
+
+To use union types, you need to define an interface to represent the union of
+possible values, and this interface needs to implement `bare.Union`:
+
+```go
+type Person interface {
+	Union
+}
+```
+
+Then, for each possible union type, implement the interface:
+
+```go
+type Employee struct { /* ... */ }
+
+func (e Employee) UnionTag() uint8 {
+	return 0
+}
+
+type Customer struct { /* ... */ }
+
+func (c Customer) UnionTag() uint8 {
+	return 1
+}
+```
+
+Each UnionTag function for this union must return a unique value. Then, to
+marshal and unmarshal using this union type, you need to tell go-bare about your
+union:
+
+```go
+func init() {
+    // The first argument is a pointer of the union interface, and the
+    // subsequent arguments are values of each possible subtype, in ascending
+    // order of union tag:
+    bare.RegisterUnion((*Person)(nil), *new(Employee), *new(Customer))
+}
+```
+
+This is all done for you if you use the code generation approach described
+below.
+
 ## Code generation
 
 An example is provided in the `examples` directory. Here is a basic
