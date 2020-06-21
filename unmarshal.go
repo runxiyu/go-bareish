@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// Unmarshals a BARE message into val, which should be a pointer to a value of
+// Unmarshals a BARE message into val, which must be a pointer to a value of
 // the message type.
 //
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
@@ -17,8 +17,8 @@ func Unmarshal(data []byte, val interface{}) error {
 	return UnmarshalReader(r, val)
 }
 
-// Unmarshals a BARE message into val, from a reader. val should be a pointer
-// to a value of the message type. See Unmarshal for details.
+// Unmarshals a BARE message into value (val, which must be a pointer), from a
+// reader. See Unmarshal for details.
 func UnmarshalReader(r *Reader, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
@@ -46,10 +46,7 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		}
 	}
 
-	// TODO: 
-	// - data, data<len>
-	// - Decode maps, tagged unions
-
+	// TODO: unions; custom encoders
 	var err error
 	switch t.Kind() {
 	case reflect.Uint8:
