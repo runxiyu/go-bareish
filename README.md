@@ -70,3 +70,14 @@ bytes := []byte{ /* ... */ }
 var addr Address
 err := addr.Decode(bytes)
 ```
+
+You can also add custom types and skip generating them by passing the `-s
+TypeName` flag to gen, then providing your own implementation. For example, to
+rig up time.Time with a custom "Time" BARE type, add this to your BARE schema:
+
+```
+type Time string
+```
+
+Then pass `-s Time` to gen, and provide your own implementation of Time in the
+same package. See `examples/time.go` for an example of such an implementation.
