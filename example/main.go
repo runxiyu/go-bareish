@@ -7,6 +7,9 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	"git.sr.ht/~sircmpwn/go-bare"
 )
 
 func main() {
@@ -14,18 +17,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("read stdin: %e", err)
 	}
-	var customer Customer
-	err = customer.Decode(data)
+	var person Person
+	err = bare.Unmarshal(data, &person)
 	if err != nil {
 		log.Fatalf("decode: %e", err)
 	}
-	var addrs []string
-	for _, addr := range customer.Address.Address {
-		if addr != "" {
-			addrs = append(addrs, addr)
+	switch person := person.(type) {
+	case *Customer:
+		var addrs []string
+		for _, addr := range person.Address.Address {
+			if addr != "" {
+				addrs = append(addrs, addr)
+			}
 		}
-	}
-	fmt.Printf(`Customer details:
+		fmt.Printf(`Customer details:
 Name: %s
 Email: %s
 Address:
@@ -33,11 +38,32 @@ Address:
 	%s, %s
 	%s
 Orders:
-`, customer.Name, customer.Email, strings.Join(addrs, "\n"),
-	customer.Address.City, customer.Address.State,
-	customer.Address.Country)
-	for _, order := range customer.Orders {
-		fmt.Printf("- Order ID: %d\n  Quantity: %d\n",
-			order.OrderId, order.Quantity)
+	`, person.Name, person.Email, strings.Join(addrs, "\n"),
+		person.Address.City, person.Address.State,
+		person.Address.Country)
+		for _, order := range person.Orders {
+			fmt.Printf("- Order ID: %d\n  Quantity: %d\n",
+				order.OrderId, order.Quantity)
+		}
+	case *Employee:
+		var addrs []string
+		for _, addr := range person.Address.Address {
+			if addr != "" {
+				addrs = append(addrs, addr)
+			}
+		}
+		fmt.Printf(`Employee details:
+Name: %s
+Email: %s
+Address:
+	%s
+	%s, %s
+	%s
+Department: %s
+Hire date: %s
+`, person.Name, person.Email, strings.Join(addrs, "\n"),
+		person.Address.City, person.Address.State,
+		person.Address.Country, person.Department.String(),
+		time.Time(person.HireDate).Format(time.RFC3339))
 	}
 }

@@ -1,14 +1,25 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"git.sr.ht/~sircmpwn/go-bare"
+)
 
 type Time time.Time
 
-func (t *Time) Decode(data []byte) error {
-	tm, err := time.Parse("2006-01-02T15:04:05Z0700", string(data))
+func (t *Time) Unmarshal(r *bare.Reader) error {
+	st, err := r.ReadString()
 	if err != nil {
-		return err
+		return fmt.Errorf("Time.Unmarshal: read string: %e", err)
 	}
+
+	tm, err := time.Parse(time.RFC3339, st)
+	if err != nil {
+		return fmt.Errorf("Time.Unmarshal: parse time: %e", err)
+	}
+
 	*t = Time(tm)
 	return nil
 }

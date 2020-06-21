@@ -32,6 +32,8 @@ type Employee {
 	metadata: map[string]data
 }
 
+type Person (Customer | Employee)
+
 type Address {
 	address: [4]string
 	city: string

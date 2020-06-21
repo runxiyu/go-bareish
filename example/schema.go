@@ -80,6 +80,14 @@ func (t *Employee) Encode() ([]byte, error) {
 	return bare.Marshal(t)
 }
 
+type Person interface {
+	bare.Union
+}
+
+func (_ Customer) IsUnion() { }
+
+func (_ Employee) IsUnion() { }
+
 type Address struct {
 	Address [4]string `bare:"address"`
 	City    string `bare:"city"`
@@ -93,4 +101,8 @@ func (t *Address) Decode(data []byte) error {
 
 func (t *Address) Encode() ([]byte, error) {
 	return bare.Marshal(t)
+}
+
+func init() {
+	bare.RegisterUnion((*Person)(nil), *new(Customer), *new(Employee))
 }
