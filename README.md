@@ -102,21 +102,15 @@ Then, for each possible union type, implement the interface:
 
 ```go
 type Employee struct { /* ... */ }
-
-func (e Employee) UnionTag() uint8 {
-	return 0
-}
+func (e Employee) IsUnion() {}
 
 type Customer struct { /* ... */ }
-
-func (c Customer) UnionTag() uint8 {
-	return 1
-}
+func (c Customer) IsUnion() {}
 ```
 
-Each UnionTag function for this union must return a unique value. Then, to
-marshal and unmarshal using this union type, you need to tell go-bare about your
-union:
+The IsUnion function is necessary to make the type compatible with the Union
+interface. Then, to marshal and unmarshal using this union type, you need to
+tell go-bare about your union:
 
 ```go
 func init() {

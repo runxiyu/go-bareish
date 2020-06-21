@@ -50,7 +50,7 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 	if v.Type().Implements(reflect.TypeOf((*Union)(nil)).Elem()) {
 		ut, ok := unionRegistry[t]
 		if !ok {
-			return fmt.Errorf("Union type %s is not registered in this context", t.Name())
+			return fmt.Errorf("Union type %s is not registered", t.Name())
 		}
 
 		tag, err := r.ReadU8()

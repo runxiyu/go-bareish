@@ -3,6 +3,7 @@ package bare
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -53,7 +54,24 @@ func marshalWriter(w *Writer,
 	}
 
 	if union, ok := v.Interface().(Union); ok {
-		err := w.WriteU8(union.UnionTag())
+		ut, ok := unionRegistry[t]
+		if !ok {
+			return fmt.Errorf("Union type %s is not registered", t.Name())
+		}
+
+		var tag int = -1
+		for i, ty := range ut {
+			if ty == reflect.TypeOf(v.Interface()) {
+				tag = i
+				break
+			}
+		}
+		if tag == -1 {
+			return fmt.Errorf("Union type %s is not a registered member of %s",
+				reflect.TypeOf(v.Interface()).Name(), t.Name())
+		}
+
+		err := w.WriteU8(uint8(tag))
 		if err != nil {
 			return err
 		}

@@ -9,7 +9,7 @@ import (
 // also call RegisterUnion for go-bare to marshal or unmarshal messages which
 // utilize your union type.
 type Union interface {
-	UnionTag() uint8
+	IsUnion()
 }
 
 var unionRegistry map[reflect.Type][]reflect.Type

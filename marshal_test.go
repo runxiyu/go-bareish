@@ -15,8 +15,8 @@ type Name string
 type Age int
 
 type NameAge interface { Union }
-func (n Name) UnionTag() uint8 { return 0 }
-func (a Age) UnionTag() uint8 { return 1 }
+func (n Name) IsUnion(){}
+func (a Age) IsUnion(){}
 
 func TestMarshalValue(t *testing.T) {
 	var (
