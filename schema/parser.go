@@ -231,6 +231,9 @@ func parseType(scanner *Scanner) (Type, error) {
 	case TLBRACKET:
 		scanner.PushBack(tok)
 		return parseArrayType(scanner)
+	case TLPAREN:
+		scanner.PushBack(tok)
+		return parseUnionType(scanner)
 	case TLBRACE:
 		scanner.PushBack(tok)
 		return parseStructType(scanner)
@@ -389,6 +392,39 @@ func parseArrayType(scanner *Scanner) (Type, error) {
 	}
 
 	return &ArrayType{member, length}, nil
+}
+
+func parseUnionType(scanner *Scanner) (Type, error) {
+	tok, err := scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	if tok.Token != TLPAREN {
+		return nil, &ErrUnexpectedToken{tok, "("}
+	}
+
+	var types []Type
+	for {
+		ty, err := parseType(scanner)
+		if err != nil {
+			return nil, err
+		}
+		types = append(types, ty)
+
+		tok, err := scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+		if tok.Token == TPIPE {
+			continue
+		} else if tok.Token == TRPAREN {
+			break
+		} else {
+			return nil, &ErrUnexpectedToken{tok, "'|' or ')'"}
+		}
+	}
+
+	return &UnionType{types}, nil
 }
 
 func parseStructType(scanner *Scanner) (Type, error) {

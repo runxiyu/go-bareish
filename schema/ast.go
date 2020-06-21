@@ -86,7 +86,7 @@ const (
 	// map[type]type
 	Map
 	// (type | type | ...)
-	TaggedUnion
+	Union
 	// { fields... }
 	Struct
 	// Named user type
@@ -167,6 +167,18 @@ func (at *ArrayType) Member() Type {
 
 func (at *ArrayType) Length() uint {
 	return at.length
+}
+
+type UnionType struct {
+	types []Type
+}
+
+func (ut *UnionType) Kind() TypeKind {
+	return Union
+}
+
+func (ut *UnionType) Types() []Type {
+	return ut.types
 }
 
 type StructType struct {

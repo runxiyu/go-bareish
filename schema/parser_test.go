@@ -171,6 +171,36 @@ func TestParseStruct(t *testing.T) {
 	assert.Equal(t, I32, f.Type().Kind())
 }
 
+func TestParseUnion(t *testing.T) {
+	types, err := Parse(strings.NewReader(`
+		type MyUnion (i8 | i16 | i32 | i64)
+	`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 1)
+
+	ty := types[0]
+	assert.IsType(t, new(UserDefinedType), ty)
+	udt := ty.(*UserDefinedType)
+	assert.Equal(t, "MyUnion", udt.Name())
+
+	assert.IsType(t, new(UnionType), udt.Type())
+	ut := udt.Type().(*UnionType)
+	assert.Equal(t, Union, ut.Kind())
+	assert.Len(t, ut.Types(), 4)
+
+	o := ut.Types()[0]
+	assert.Equal(t, I8, o.Kind())
+
+	o = ut.Types()[1]
+	assert.Equal(t, I16, o.Kind())
+
+	o = ut.Types()[2]
+	assert.Equal(t, I32, o.Kind())
+
+	o = ut.Types()[3]
+	assert.Equal(t, I64, o.Kind())
+}
+
 func TestParseNamedType(t *testing.T) {
 	types, err := Parse(strings.NewReader(`type MyTypeB MyTypeA`))
 	assert.NoError(t, err)
