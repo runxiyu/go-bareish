@@ -86,8 +86,10 @@ func marshalWriter(w *Writer,
 		t = v.Type()
 	}
 
-	if marshal, ok := v.Addr().Interface().(Marshalable); ok {
-		return marshal.Marshal(w)
+	if v.CanAddr() {
+		if marshal, ok := v.Addr().Interface().(Marshalable); ok {
+			return marshal.Marshal(w)
+		}
 	}
 
 	// TODO: custom encoders

@@ -74,8 +74,10 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		t = v.Type()
 	}
 
-	if unmarshal, ok := v.Addr().Interface().(Unmarshalable); ok {
-		return unmarshal.Unmarshal(r)
+	if v.CanAddr() {
+		if unmarshal, ok := v.Addr().Interface().(Unmarshalable); ok {
+			return unmarshal.Unmarshal(r)
+		}
 	}
 
 	// TODO: custom encoders
