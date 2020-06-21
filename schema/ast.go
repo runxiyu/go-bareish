@@ -146,3 +146,28 @@ func (at *ArrayType) Member() Type {
 func (at *ArrayType) Length() uint {
 	return at.length
 }
+
+type StructType struct {
+	fields []StructField
+}
+
+func (st *StructType) Kind() TypeKind {
+	return Struct
+}
+
+func (st *StructType) Fields() []StructField {
+	return st.fields
+}
+
+type StructField struct {
+	name string
+	type_ Type
+}
+
+func (sf *StructField) Name() string {
+	return sf.name
+}
+
+func (sf *StructField) Type() Type {
+	return sf.type_
+}

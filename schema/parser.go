@@ -4,8 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 )
+
+var userTypeNameRE = regexp.MustCompile(`[A-Z][A-Za-z0-9]+`)
 
 // Returned when the lexer encounters an unexpected token
 type ErrUnexpectedToken struct {
@@ -124,6 +127,9 @@ func parseType(scanner *Scanner) (Type, error) {
 	case TLBRACKET:
 		scanner.PushBack(tok)
 		return parseArrayType(scanner)
+	case TLBRACE:
+		scanner.PushBack(tok)
+		return parseStructType(scanner)
 	case TNAME:
 		panic(errors.New("TODO"))
 	}
@@ -279,4 +285,49 @@ func parseArrayType(scanner *Scanner) (Type, error) {
 	}
 
 	return &ArrayType{member, length}, nil
+}
+
+func parseStructType(scanner *Scanner) (Type, error) {
+	tok, err := scanner.Next()
+	if err != nil {
+		return nil, err
+	}
+	if tok.Token != TLBRACE {
+		return nil, &ErrUnexpectedToken{tok, "["}
+	}
+
+	var fields []StructField
+	for {
+		var sf StructField
+
+		tok, err := scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+		if tok.Token == TRBRACE {
+			break
+		}
+		if tok.Token != TNAME {
+			return nil, &ErrUnexpectedToken{tok, "field name"}
+		}
+
+		sf.name = tok.Value
+
+		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+		if tok.Token != TCOLON {
+			return nil, &ErrUnexpectedToken{tok, ":"}
+		}
+
+		sf.type_, err = parseType(scanner)
+		if err != nil {
+			return nil, err
+		}
+
+		fields = append(fields, sf)
+	}
+
+	return &StructType{fields}, nil
 }

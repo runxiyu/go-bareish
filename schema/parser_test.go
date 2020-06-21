@@ -137,3 +137,36 @@ func TestParseArrays(t *testing.T) {
 	assert.Equal(t, Slice, at.Kind())
 	assert.Equal(t, String, at.Member().Kind())
 }
+
+func TestParseStruct(t *testing.T) {
+	types, err := Parse(strings.NewReader(`
+		type MyStruct {
+			x: i32
+			y: i32
+			z: i32
+		}`))
+	assert.NoError(t, err)
+	assert.Len(t, types, 1)
+
+	ty := types[0]
+	assert.IsType(t, new(UserDefinedType), ty)
+	udt := ty.(*UserDefinedType)
+	assert.Equal(t, "MyStruct", udt.Name())
+
+	assert.IsType(t, new(StructType), udt.Type())
+	st := udt.Type().(*StructType)
+	assert.Equal(t, Struct, st.Kind())
+	assert.Len(t, st.Fields(), 3)
+
+	f := st.Fields()[0]
+	assert.Equal(t, "x", f.Name())
+	assert.Equal(t, I32, f.Type().Kind())
+
+	f = st.Fields()[1]
+	assert.Equal(t, "y", f.Name())
+	assert.Equal(t, I32, f.Type().Kind())
+
+	f = st.Fields()[2]
+	assert.Equal(t, "z", f.Name())
+	assert.Equal(t, I32, f.Type().Kind())
+}
