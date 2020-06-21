@@ -45,4 +45,28 @@ func main() {
 
 ## Code generation
 
-TODO
+An example is provided in the `examples` directory. Here is a basic
+introduction:
+
+```
+$ cat schema.bare
+type Address {
+	address: [4]string
+	city: string
+	state: string
+	country: string
+}
+$ go run git.sr.ht/~sircmpwn/go-bare/cmd/gen -p models schema.bare models/gen.go
+```
+
+Then you can write something like the following:
+
+```go
+import "models"
+
+/* ... */
+
+bytes := []byte{ /* ... */ }
+var addr Address
+err := addr.Decode(bytes)
+```
