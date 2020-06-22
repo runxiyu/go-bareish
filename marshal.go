@@ -92,8 +92,10 @@ func marshalWriter(w *Writer,
 		}
 	}
 
-	// TODO: custom encoders
+	// TODO: Struct tags for explicit varints (useful on 32-bit systems)
 	switch t.Kind() {
+	case reflect.Uint:
+		return w.WriteUint(v.Uint())
 	case reflect.Uint8:
 		return w.WriteU8(uint8(v.Uint()))
 	case reflect.Uint16:
@@ -102,8 +104,8 @@ func marshalWriter(w *Writer,
 		return w.WriteU32(uint32(v.Uint()))
 	case reflect.Uint64:
 		return w.WriteU64(uint64(v.Uint()))
-	case reflect.Uint:
-		return w.WriteU32(uint32(v.Uint()))
+	case reflect.Int:
+		return w.WriteInt(v.Int())
 	case reflect.Int8:
 		return w.WriteI8(int8(v.Int()))
 	case reflect.Int16:
@@ -112,8 +114,6 @@ func marshalWriter(w *Writer,
 		return w.WriteI32(int32(v.Int()))
 	case reflect.Int64:
 		return w.WriteI64(int64(v.Int()))
-	case reflect.Int:
-		return w.WriteI32(int32(v.Int()))
 	case reflect.Float32:
 		return w.WriteF32(float32(v.Float()))
 	case reflect.Float64:

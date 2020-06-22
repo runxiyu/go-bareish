@@ -80,9 +80,13 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		}
 	}
 
-	// TODO: custom encoders
+	// TODO: Struct tags for explicit varints (useful on 32-bit systems)
 	var err error
 	switch t.Kind() {
+	case reflect.Uint:
+		var i uint64
+		i, err = r.ReadUint()
+		v.SetUint(i)
 	case reflect.Uint8:
 		var i uint8
 		i, err = r.ReadU8()
@@ -99,10 +103,10 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 		var i uint64
 		i, err = r.ReadU64()
 		v.SetUint(uint64(i))
-	case reflect.Uint:
-		var i uint32
-		i, err = r.ReadU32()
-		v.SetUint(uint64(i))
+	case reflect.Int:
+		var i int64
+		i, err = r.ReadInt()
+		v.SetInt(i)
 	case reflect.Int8:
 		var i int8
 		i, err = r.ReadI8()
@@ -118,10 +122,6 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 	case reflect.Int64:
 		var i int64
 		i, err = r.ReadI64()
-		v.SetInt(int64(i))
-	case reflect.Int:
-		var i int32
-		i, err = r.ReadI32()
 		v.SetInt(int64(i))
 	case reflect.Float32:
 		var f float32

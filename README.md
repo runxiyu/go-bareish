@@ -68,26 +68,21 @@ import (
 //    q: optional<int>
 // }
 type Coordinates struct {
-    X int
-    Y int
-    Z int
-    Q *int
+    X uint
+    Y uint
+    Z uint
+    Q *uint
 }
 
 func main() {
     var coords Coordinates
-    payload := []byte{
-        0x01, 0x00, 0x00, 0x00,
-        0x02, 0x00, 0x00, 0x00,
-        0x03, 0x00, 0x00, 0x00,
-        0x01, 0x04, 0x00, 0x00, 0x00,
-    }
+    payload := []byte{0x01, 0x02, 0x03, 0x01, 0x04}
     err := bare.Unmarshal(payload, &coords)
     if err != nil {
         panic(err)
     }
-    fmt.Printf("coords: %d, %d, %d (%d)",
-        coords.X, coords.Y, coords.Z, *coords.Q)
+    fmt.Printf("coords: %d, %d, %d (%d)\n",
+        coords.X, coords.Y, coords.Z, *coords.Q) /* coords: 1, 2, 3 (4) */
 }
 ```
 

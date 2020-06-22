@@ -31,12 +31,12 @@ func TestUnmarshalValue(t *testing.T) {
 		[]byte{0xFE, 0xCA},
 		[]byte{0xEF, 0xBE, 0xAD, 0xDE},
 		[]byte{0xEF, 0xBE, 0xAD, 0xDE, 0xBE, 0xBA, 0xFE, 0xCA},
-		[]byte{0xEF, 0xBE, 0xAD, 0xDE},
+		[]byte{0xEF, 0xFD, 0xB6, 0xF5, 0x0D},
 		[]byte{0xD6},
 		[]byte{0x2E, 0xFB},
 		[]byte{0xB2, 0x9E, 0x43, 0xFF},
 		[]byte{0x4F, 0x0B, 0x6E, 0x9D, 0xAB, 0x23, 0xD4, 0xFF},
-		[]byte{0xB2, 0x9E, 0x43, 0xFF},
+		[]byte{0x9B, 0x85, 0xE3, 0x0B},
 		[]byte{0x71, 0x2D, 0xA7, 0x44},
 		[]byte{0x9B, 0x6C, 0xC9, 0x20, 0xF0, 0x21, 0x3F, 0x42},
 		[]byte{0x00, 0x01, 0x02},
@@ -123,18 +123,14 @@ func TestUnmarshalOptional(t *testing.T) {
 }
 
 func TestUnmarshalStruct(t *testing.T) {
-	type Coordinates struct { X, Y, Z int }
-	payload := []byte{
-		0x01, 0x00, 0x00, 0x00,
-		0x02, 0x00, 0x00, 0x00,
-		0x03, 0x00, 0x00, 0x00,
-	}
+	type Coordinates struct { X, Y, Z uint }
+	payload := []byte{0x01, 0x02, 0x03}
 	var coords Coordinates
 	err := Unmarshal(payload, &coords)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
-	assert.Equal(t, 1, coords.X, "Expected Unmarshal to read {1, 2, 3}")
-	assert.Equal(t, 2, coords.Y, "Expected Unmarshal to read {1, 2, 3}")
-	assert.Equal(t, 3, coords.Z, "Expected Unmarshal to read {1, 2, 3}")
+	assert.Equal(t, uint(1), coords.X, "Expected Unmarshal to read {1, 2, 3}")
+	assert.Equal(t, uint(2), coords.Y, "Expected Unmarshal to read {1, 2, 3}")
+	assert.Equal(t, uint(3), coords.Z, "Expected Unmarshal to read {1, 2, 3}")
 }
 
 func TestUnmarshalArray(t *testing.T) {
@@ -184,7 +180,7 @@ func TestUnmarshalUnion(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, Name("Mary"), *name)
 
-	payload = []byte{0x01, 0x18, 0x00, 0x00, 0x00}
+	payload = []byte{0x01, 0x30}
 	err = Unmarshal(payload, &val)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 
