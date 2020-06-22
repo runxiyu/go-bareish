@@ -168,15 +168,28 @@ func (at *ArrayType) Length() uint {
 }
 
 type UnionType struct {
-	types []Type
+	types []UnionSubtype
 }
 
 func (ut *UnionType) Kind() TypeKind {
 	return Union
 }
 
-func (ut *UnionType) Types() []Type {
+func (ut *UnionType) Types() []UnionSubtype {
 	return ut.types
+}
+
+type UnionSubtype struct {
+	subtype Type
+	tag     uint64
+}
+
+func (ust *UnionSubtype) Type() Type {
+	return ust.subtype
+}
+
+func (ust *UnionSubtype) Tag() uint64 {
+	return ust.tag
 }
 
 type StructType struct {

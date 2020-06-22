@@ -8,7 +8,9 @@ import (
 )
 
 func init() {
-	RegisterUnion((*NameAge)(nil), *new(Name), *new(Age))
+	RegisterUnion((*NameAge)(nil)).
+		Member(*new(Name), 0).
+		Member(*new(Age), 1)
 }
 
 type Name string

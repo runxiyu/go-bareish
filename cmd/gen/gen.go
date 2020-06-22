@@ -39,20 +39,21 @@ import (
 	if len(ctx.unions) > 0 {
 		fmt.Fprintf(w, "\nfunc init() {\n")
 		for _, udt := range ctx.unions {
-			fmt.Fprintf(w, "\tbare.RegisterUnion((*%s)(nil), ", udt.Name())
+			fmt.Fprintf(w, "\tbare.RegisterUnion((*%s)(nil)).\n", udt.Name())
 			ut, _ := udt.Type().(*schema.UnionType)
 			for i, ty := range ut.Types() {
-				switch ty := ty.(type) {
+				tag := ty.Tag()
+				switch ty := ty.Type().(type) {
 				case *schema.NamedUserType:
-					fmt.Fprintf(w, "*new(%s)", ty.Name())
+					fmt.Fprintf(w, "\t\tMember(*new(%s), %d)", ty.Name(), tag)
 				default:
 					panic(fmt.Errorf("TODO: Implement unions with primitive types"))
 				}
 				if i < len(ut.Types()) - 1 {
-					fmt.Fprintf(w, ", ")
+					fmt.Fprintf(w, ".\n")
 				}
 			}
-			fmt.Fprintf(w, ")\n")
+			fmt.Fprintf(w, "\n")
 		}
 		fmt.Fprintf(w, "}\n")
 	}
@@ -109,13 +110,13 @@ func (ctx *Context) genUserUnion(w io.Writer, udt *schema.UserDefinedType) {
 	ut, _ := udt.Type().(*schema.UnionType)
 	for _, ty := range ut.Types() {
 		// XXX: This doesn't actually work the way it looks like it ought to
-		if _, ok := ctx.unionMembers[ty]; ok {
+		if _, ok := ctx.unionMembers[ty.Type()]; ok {
 			continue
 		}
 
-		ctx.unionMembers[ty] = nil
+		ctx.unionMembers[ty.Type()] = nil
 
-		switch ty := ty.(type) {
+		switch ty := ty.Type().(type) {
 		case *schema.NamedUserType:
 			fmt.Fprintf(w, "\nfunc (_ %s) IsUnion() { }\n", ty.Name())
 		default:

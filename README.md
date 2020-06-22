@@ -116,7 +116,9 @@ func init() {
     // The first argument is a pointer of the union interface, and the
     // subsequent arguments are values of each possible subtype, in ascending
     // order of union tag:
-    bare.RegisterUnion((*Person)(nil), *new(Employee), *new(Customer))
+    bare.RegisterUnion((*Person)(nil)).
+      Member(*new(Employee), 0).
+      Member(*new(Customer), 1)
 }
 ```
 

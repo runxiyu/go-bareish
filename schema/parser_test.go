@@ -193,16 +193,20 @@ func TestParseUnion(t *testing.T) {
 	assert.Len(t, ut.Types(), 4)
 
 	o := ut.Types()[0]
-	assert.Equal(t, I8, o.Kind())
+	assert.Equal(t, I8, o.Type().Kind())
+	assert.Equal(t, uint64(0), o.Tag())
 
 	o = ut.Types()[1]
-	assert.Equal(t, I16, o.Kind())
+	assert.Equal(t, I16, o.Type().Kind())
+	assert.Equal(t, uint64(1), o.Tag())
 
 	o = ut.Types()[2]
-	assert.Equal(t, I32, o.Kind())
+	assert.Equal(t, I32, o.Type().Kind())
+	assert.Equal(t, uint64(2), o.Tag())
 
 	o = ut.Types()[3]
-	assert.Equal(t, I64, o.Kind())
+	assert.Equal(t, I64, o.Type().Kind())
+	assert.Equal(t, uint64(3), o.Tag())
 }
 
 func TestParseNamedType(t *testing.T) {

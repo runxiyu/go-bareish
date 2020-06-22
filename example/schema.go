@@ -104,5 +104,7 @@ func (t *Address) Encode() ([]byte, error) {
 }
 
 func init() {
-	bare.RegisterUnion((*Person)(nil), *new(Customer), *new(Employee))
+	bare.RegisterUnion((*Person)(nil)).
+		Member(*new(Customer), 0).
+		Member(*new(Employee), 1)
 }

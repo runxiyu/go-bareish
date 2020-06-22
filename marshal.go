@@ -66,22 +66,16 @@ func marshalWriter(w *Writer,
 			return fmt.Errorf("Union type %s is not registered", t.Name())
 		}
 
-		var tag int = -1
-		for i, ty := range ut {
-			if ty == reflect.TypeOf(v.Interface()) {
-				tag = i
-				break
+		if tag, ok := ut.TagFor(v.Interface()); ok {
+			err := w.WriteU8(uint8(tag))
+			if err != nil {
+				return err
 			}
-		}
-		if tag == -1 {
+		} else {
 			return fmt.Errorf("Union type %s is not a registered member of %s",
 				reflect.TypeOf(v.Interface()).Name(), t.Name())
 		}
 
-		err := w.WriteU8(uint8(tag))
-		if err != nil {
-			return err
-		}
 		v = reflect.ValueOf(v.Interface())
 		t = v.Type()
 	}

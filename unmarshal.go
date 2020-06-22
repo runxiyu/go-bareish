@@ -60,18 +60,19 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 			return fmt.Errorf("Union type %s is not registered", t.Name())
 		}
 
-		tag, err := r.ReadU8()
+		tag, err := r.ReadUint()
 		if err != nil {
 			return err
 		}
 
-		if int(tag) >= len(ut) {
+		if ty, ok := ut.TypeFor(tag); ok {
+			nv := reflect.New(ty)
+			v.Set(nv)
+			v = nv.Elem()
+			t = v.Type()
+		} else {
 			return fmt.Errorf("Invalid union tag %d for type %s", tag, t.Name())
 		}
-		nv := reflect.New(ut[tag])
-		v.Set(nv)
-		v = nv.Elem()
-		t = v.Type()
 	}
 
 	if v.CanAddr() {

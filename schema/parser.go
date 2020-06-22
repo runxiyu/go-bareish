@@ -417,22 +417,35 @@ func parseUnionType(scanner *Scanner) (Type, error) {
 		return nil, &ErrUnexpectedToken{tok, "("}
 	}
 
-	var types []Type
+	var (
+		types []UnionSubtype
+		tag   uint64
+	)
 	for {
 		ty, err := parseType(scanner)
 		if err != nil {
 			return nil, err
 		}
-		types = append(types, ty)
+		subt := UnionSubtype{
+			subtype: ty,
+			tag:     tag,
+		}
+		tag++
 
 		tok, err := scanner.Next()
 		if err != nil {
 			return nil, err
 		}
 		if tok.Token == TPIPE {
+			types = append(types, subt)
 			continue
 		} else if tok.Token == TRPAREN {
+			types = append(types, subt)
 			break
+		} else if tok.Token == TEQUAL {
+			// TODO: explicit tag values
+			types = append(types, subt)
+			return nil, &ErrUnexpectedToken{tok, "TODO"}
 		} else {
 			return nil, &ErrUnexpectedToken{tok, "'|' or ')'"}
 		}
