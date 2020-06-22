@@ -10,10 +10,12 @@ import (
 
 func TestScanWords(t *testing.T) {
 	cases := map[string]TokenKind{
+		"uint": TUINT,
 		"u8": TU8,
 		"u16": TU16,
 		"u32": TU32,
 		"u64": TU64,
+		"int": TINT,
 		"i8": TI8,
 		"i16": TI16,
 		"i32": TI32,

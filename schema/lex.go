@@ -131,6 +131,8 @@ func (sc *Scanner) scanWord() (Token, error) {
 		return Token{TTYPE, ""}, nil
 	case "enum":
 		return Token{TENUM, ""}, nil
+	case "uint":
+		return Token{TUINT, ""}, nil
 	case "u8":
 		return Token{TU8, ""}, nil
 	case "u16":
@@ -139,6 +141,8 @@ func (sc *Scanner) scanWord() (Token, error) {
 		return Token{TU32, ""}, nil
 	case "u64":
 		return Token{TU64, ""}, nil
+	case "int":
+		return Token{TINT, ""}, nil
 	case "i8":
 		return Token{TI8, ""}, nil
 	case "i16":
@@ -206,10 +210,12 @@ const (
 	TNAME
 	TINTEGER
 
+	TUINT
 	TU8
 	TU16
 	TU32
 	TU64
+	TINT
 	TI8
 	TI16
 	TI32
@@ -256,6 +262,8 @@ func (t Token) String() string {
 		return "name"
 	case TINTEGER:
 		return "integer"
+	case TUINT:
+		return "uint"
 	case TU8:
 		return "u8"
 	case TU16:
@@ -264,6 +272,8 @@ func (t Token) String() string {
 		return "u32"
 	case TU64:
 		return "u64"
+	case TINT:
+		return "int"
 	case TI8:
 		return "i8"
 	case TI16:
