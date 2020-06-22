@@ -176,7 +176,7 @@ func unmarshalArray(r *Reader, t reflect.Type, v reflect.Value) error {
 }
 
 func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
-	l, err := r.ReadU32()
+	l, err := r.ReadUint()
 	if err != nil {
 		return err
 	}
@@ -193,7 +193,7 @@ func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
 }
 
 func unmarshalMap(r *Reader, t reflect.Type, v reflect.Value) error {
-	l, err := r.ReadU32()
+	l, err := r.ReadUint()
 	if err != nil {
 		return err
 	}

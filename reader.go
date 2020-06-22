@@ -113,18 +113,18 @@ func (r *Reader) ReadDataFixed(dest []byte) error {
 
 // Reads arbitrary data whose length is read from the message.
 func (r *Reader) ReadData() ([]byte, error) {
-	l, err := r.ReadU32()
+	l, err := r.ReadUint()
 	if err != nil {
 		return nil, err
 	}
 	buf := make([]byte, l)
-	var amt uint32 = 0
+	var amt uint64 = 0
 	for amt < l {
 		n, err := r.base.Read(buf[amt:])
 		if err != nil {
 			return nil, err
 		}
-		amt += uint32(n)
+		amt += uint64(n)
 	}
 	return buf, nil
 }

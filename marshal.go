@@ -158,7 +158,7 @@ func marshalArray(w *Writer, t reflect.Type, v reflect.Value) error {
 }
 
 func marshalSlice(w *Writer, t reflect.Type, v reflect.Value) error {
-	err := w.WriteU32(uint32(v.Len()))
+	err := w.WriteUint(uint64(v.Len()))
 	if err != nil {
 		return err
 	}
@@ -173,7 +173,7 @@ func marshalSlice(w *Writer, t reflect.Type, v reflect.Value) error {
 }
 
 func marshalMap(w *Writer, t reflect.Type, v reflect.Value) error {
-	err := w.WriteU32(uint32(v.Len()))
+	err := w.WriteUint(uint64(v.Len()))
 	if err != nil {
 		return err
 	}

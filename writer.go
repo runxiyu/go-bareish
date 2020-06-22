@@ -92,7 +92,7 @@ func (w *Writer) WriteDataFixed(data []byte) error {
 
 // Writes arbitrary data whose length is encoded into the message.
 func (w *Writer) WriteData(data []byte) error {
-	err := w.WriteU32(uint32(len(data)))
+	err := w.WriteUint(uint64(len(data)))
 	if err != nil {
 		return err
 	}
