@@ -7,6 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestWriteUint(t *testing.T) {
+	b := bytes.NewBuffer([]byte{})
+	w := NewWriter(b)
+
+	err := w.WriteUint(0x7F)
+	assert.Nil(t, err)
+	err = w.WriteUint(0x1337)
+	assert.Nil(t, err)
+	assert.Equal(t, []byte{0x7F, 0xB7, 0x26}, b.Bytes())
+}
+
 func TestWriteU8(t *testing.T) {
 	b := bytes.NewBuffer([]byte{})
 	w := NewWriter(b)
@@ -37,6 +48,17 @@ func TestWriteU64(t *testing.T) {
 	err := w.WriteU64(uint64(0xCAFEBABEDEADBEEF))
 	assert.Nil(t, err)
 	assert.Equal(t, []byte{0xEF, 0xBE, 0xAD, 0xDE, 0xBE, 0xBA, 0xFE, 0xCA}, b.Bytes())
+}
+
+func TestWriteInt(t *testing.T) {
+	b := bytes.NewBuffer([]byte{})
+	w := NewWriter(b)
+
+	err := w.WriteInt(42)
+	assert.Nil(t, err)
+	err = w.WriteInt(-1337)
+	assert.Nil(t, err)
+	assert.Equal(t, []byte{0x54, 0xf1, 0x14}, b.Bytes())
 }
 
 func TestWriteI8(t *testing.T) {

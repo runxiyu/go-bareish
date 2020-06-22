@@ -15,6 +15,13 @@ func NewWriter(base io.Writer) *Writer {
 	return &Writer{base}
 }
 
+func (w *Writer) WriteUint(i uint64) error {
+	var buf [binary.MaxVarintLen64]byte
+	n := binary.PutUvarint(buf[:], i)
+	_, err := w.base.Write(buf[:n])
+	return err
+}
+
 func (w *Writer) WriteU8(i uint8) error {
 	return binary.Write(w.base, binary.LittleEndian, i)
 }
@@ -29,6 +36,13 @@ func (w *Writer) WriteU32(i uint32) error {
 
 func (w *Writer) WriteU64(i uint64) error {
 	return binary.Write(w.base, binary.LittleEndian, i)
+}
+
+func (w *Writer) WriteInt(i int64) error {
+	var buf [binary.MaxVarintLen64]byte
+	n := binary.PutVarint(buf[:], i)
+	_, err := w.base.Write(buf[:n])
+	return err
 }
 
 func (w *Writer) WriteI8(i int8) error {

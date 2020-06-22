@@ -8,6 +8,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestReadUint(t *testing.T) {
+	b := bytes.NewBuffer([]byte{0x7F, 0xB7, 0x26})
+	r := NewReader(b)
+
+	v, err := r.ReadUint()
+	assert.Nil(t, err)
+	assert.Equal(t, uint64(0x7F), v)
+
+	v, err = r.ReadUint()
+	assert.Nil(t, err)
+	assert.Equal(t, uint64(0x1337), v)
+
+	_, err = r.ReadUint()
+	assert.Equal(t, err, io.EOF)
+}
+
 func TestReadU8(t *testing.T) {
 	b := bytes.NewBuffer([]byte{0x42})
 	r := NewReader(b)
@@ -47,6 +63,22 @@ func TestReadU64(t *testing.T) {
 		"Expected reader to return 0xCAFEBABEDEADBEEF")
 	_, err = r.ReadU64()
 	assert.Equal(t, err, io.EOF, "Expected ReadU64 to return EOF")
+}
+
+func TestReadInt(t *testing.T) {
+	b := bytes.NewBuffer([]byte{0x54, 0xf1, 0x14})
+	r := NewReader(b)
+
+	v, err := r.ReadInt()
+	assert.Nil(t, err)
+	assert.Equal(t, int64(42), v)
+
+	v, err = r.ReadInt()
+	assert.Nil(t, err)
+	assert.Equal(t, v, int64(-1337))
+
+	_, err = r.ReadUint()
+	assert.Equal(t, err, io.EOF)
 }
 
 func TestReadI8(t *testing.T) {

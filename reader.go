@@ -2,17 +2,22 @@ package bare
 
 import (
 	"encoding/binary"
+	"bufio"
 	"io"
 )
 
 // A Reader for BARE primitive types.
 type Reader struct {
-	base io.Reader
+	base *bufio.Reader
 }
 
 // Returns a new BARE primitive reader wrapping the given io.Reader.
 func NewReader(base io.Reader) *Reader {
-	return &Reader{base}
+	return &Reader{bufio.NewReader(base)}
+}
+
+func (r *Reader) ReadUint() (uint64, error) {
+	return binary.ReadUvarint(r.base)
 }
 
 func (r *Reader) ReadU8() (uint8, error) {
@@ -37,6 +42,10 @@ func (r *Reader) ReadU64() (uint64, error) {
 	var i uint64
 	err := binary.Read(r.base, binary.LittleEndian, &i)
 	return i, err
+}
+
+func (r *Reader) ReadInt() (int64, error) {
+	return binary.ReadVarint(r.base)
 }
 
 func (r *Reader) ReadI8() (int8, error) {
