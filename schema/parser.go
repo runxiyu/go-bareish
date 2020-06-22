@@ -426,26 +426,39 @@ func parseUnionType(scanner *Scanner) (Type, error) {
 		if err != nil {
 			return nil, err
 		}
-		subt := UnionSubtype{
-			subtype: ty,
-			tag:     tag,
-		}
-		tag++
 
-		tok, err := scanner.Next()
+		tok, err = scanner.Next()
 		if err != nil {
 			return nil, err
 		}
+		if tok.Token == TEQUAL {
+			tok, err := scanner.Next()
+			if err != nil {
+				return nil, err
+			}
+			if tok.Token != TINTEGER {
+				return nil, &ErrUnexpectedToken{tok, "integer"}
+			}
+			tag, _ = strconv.ParseUint(tok.Value, 10, 64)
+		} else {
+			scanner.PushBack(tok)
+		}
+
+		types = append(types, UnionSubtype{
+			subtype: ty,
+			tag:     tag,
+		})
+		tag++
+
+		tok, err = scanner.Next()
+		if err != nil {
+			return nil, err
+		}
+
 		if tok.Token == TPIPE {
-			types = append(types, subt)
 			continue
 		} else if tok.Token == TRPAREN {
-			types = append(types, subt)
 			break
-		} else if tok.Token == TEQUAL {
-			// TODO: explicit tag values
-			types = append(types, subt)
-			return nil, &ErrUnexpectedToken{tok, "TODO"}
 		} else {
 			return nil, &ErrUnexpectedToken{tok, "'|' or ')'"}
 		}
