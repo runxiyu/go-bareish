@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"reflect"
 )
 
@@ -21,12 +22,17 @@ type Unmarshalable interface {
 func Unmarshal(data []byte, val interface{}) error {
 	b := bytes.NewReader(data)
 	r := NewReader(b)
-	return UnmarshalReader(r, val)
+	return unmarshalReader(r, val)
 }
 
 // Unmarshals a BARE message into value (val, which must be a pointer), from a
 // reader. See Unmarshal for details.
-func UnmarshalReader(r *Reader, val interface{}) error {
+func UnmarshalReader(r io.Reader, val interface{}) error {
+	r = newLimitedReader(r)
+	return unmarshalReader(NewReader(r), val)
+}
+
+func unmarshalReader(r *Reader, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
 	if t.Kind() == reflect.Ptr {
@@ -157,7 +163,7 @@ func UnmarshalReader(r *Reader, val interface{}) error {
 func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.NumField(); i++ {
 		value := v.Field(i)
-		err := UnmarshalReader(r, value.Addr().Interface())
+		err := unmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -168,7 +174,7 @@ func unmarshalStruct(r *Reader, t reflect.Type, v reflect.Value) error {
 func unmarshalArray(r *Reader, t reflect.Type, v reflect.Value) error {
 	for i := 0; i < t.Len(); i++ {
 		value := v.Index(i)
-		err := UnmarshalReader(r, value.Addr().Interface())
+		err := unmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -181,10 +187,13 @@ func unmarshalSlice(r *Reader, t reflect.Type, v reflect.Value) error {
 	if err != nil {
 		return err
 	}
+	if l >= maxUnmarshalBytes {
+		return ErrLimitExceeded
+	}
 	slice := reflect.MakeSlice(t, int(l), int(l))
 	for i := 0; i < int(l); i++ {
 		value := slice.Index(i)
-		err := UnmarshalReader(r, value.Addr().Interface())
+		err := unmarshalReader(r, value.Addr().Interface())
 		if err != nil {
 			return err
 		}
@@ -198,15 +207,18 @@ func unmarshalMap(r *Reader, t reflect.Type, v reflect.Value) error {
 	if err != nil {
 		return err
 	}
+	if l >= maxUnmarshalBytes {
+		return ErrLimitExceeded
+	}
 	m := reflect.MakeMapWithSize(t, int(l))
 	for i := 0; i < int(l); i++ {
 		key := reflect.New(t.Key())
 		value := reflect.New(t.Elem())
-		err := UnmarshalReader(r, key.Interface())
+		err := unmarshalReader(r, key.Interface())
 		if err != nil {
 			return err
 		}
-		err = UnmarshalReader(r, value.Interface())
+		err = unmarshalReader(r, value.Interface())
 		if err != nil {
 			return err
 		}

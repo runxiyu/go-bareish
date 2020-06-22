@@ -117,6 +117,9 @@ func (r *Reader) ReadData() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if l >= maxUnmarshalBytes {
+		return nil, ErrLimitExceeded
+	}
 	buf := make([]byte, l)
 	var amt uint64 = 0
 	for amt < l {
