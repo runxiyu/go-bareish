@@ -53,10 +53,12 @@ func (ev *EnumValue) Value() uint {
 type TypeKind int
 
 const (
-	U8 TypeKind = iota
+	UINT TypeKind = iota
+	U8
 	U16
 	U32
 	U64
+	INT
 	I8
 	I16
 	I32

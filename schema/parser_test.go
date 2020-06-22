@@ -14,10 +14,12 @@ func TestParsePrimitives(t *testing.T) {
 	}
 
 	reference := []Reference{
+		{ "MyUINT", UINT },
 		{ "MyU8", U8 },
 		{ "MyU16", U16 },
 		{ "MyU32", U32 },
 		{ "MyU64", U64 },
+		{ "MyINT", INT },
 		{ "MyI8", I8 },
 		{ "MyI16", I16 },
 		{ "MyI32", I32 },
@@ -29,10 +31,12 @@ func TestParsePrimitives(t *testing.T) {
 	}
 
 	types, err := Parse(strings.NewReader(`
+		type MyUINT uint
 		type MyU8 u8
 		type MyU16 u16
 		type MyU32 u32
 		type MyU64 u64
+		type MyINT int
 		type MyI8 i8
 		type MyI16 i16
 		type MyI32 i32

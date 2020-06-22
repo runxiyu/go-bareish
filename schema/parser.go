@@ -204,6 +204,8 @@ func parseType(scanner *Scanner) (Type, error) {
 	}
 
 	switch tok.Token {
+	case TUINT:
+		return &PrimitiveType{UINT}, nil
 	case TU8:
 		return &PrimitiveType{U8}, nil
 	case TU16:
@@ -212,6 +214,8 @@ func parseType(scanner *Scanner) (Type, error) {
 		return &PrimitiveType{U32}, nil
 	case TU64:
 		return &PrimitiveType{U64}, nil
+	case TINT:
+		return &PrimitiveType{INT}, nil
 	case TI8:
 		return &PrimitiveType{I8}, nil
 	case TI16:
