@@ -124,7 +124,8 @@ func parseUserEnum(scanner *Scanner) (SchemaType, error) {
 	case TU64:
 		kind = U64
 	default:
-		return nil, &ErrUnexpectedToken{tok, "enum type"}
+		kind = UINT
+		scanner.PushBack(tok)
 	}
 
 	tok, err = scanner.Next()

@@ -230,9 +230,14 @@ func TestParseEnumType(t *testing.T) {
 			DEVELOPMENT
 			JSMITH = 99
 		}
+
+		enum MyEnumUint {
+			ACCOUNTING
+			ADMINISTRATION
+		}
 	`))
 	assert.NoError(t, err)
-	assert.Len(t, types, 1)
+	assert.Len(t, types, 2)
 
 	ty := types[0]
 	assert.IsType(t, new(UserDefinedEnum), ty)
@@ -260,4 +265,10 @@ func TestParseEnumType(t *testing.T) {
 	val = ude.Values()[4]
 	assert.Equal(t, "JSMITH", val.Name())
 	assert.Equal(t, uint(99), val.Value())
+
+	ty = types[1]
+	assert.IsType(t, new(UserDefinedEnum), ty)
+	ude = ty.(*UserDefinedEnum)
+	assert.Equal(t, "MyEnumUint", ude.Name())
+	assert.Equal(t, UINT, ude.Kind())
 }
