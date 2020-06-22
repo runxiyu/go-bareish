@@ -64,10 +64,6 @@ const (
 	F32
 	F64
 	Bool
-	E8
-	E16
-	E32
-	E64
 	String
 	// [len]type
 	Array

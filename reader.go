@@ -81,22 +81,6 @@ func (r *Reader) ReadBool() (bool, error) {
 	return b, err
 }
 
-func (r *Reader) ReadE8() (uint8, error) {
-	return r.ReadU8()
-}
-
-func (r *Reader) ReadE16() (uint16, error) {
-	return r.ReadU16()
-}
-
-func (r *Reader) ReadE32() (uint32, error) {
-	return r.ReadU32()
-}
-
-func (r *Reader) ReadE64() (uint64, error) {
-	return r.ReadU64()
-}
-
 func (r *Reader) ReadString() (string, error) {
 	buf, err := r.ReadData()
 	if err != nil {

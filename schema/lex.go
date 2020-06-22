@@ -153,14 +153,6 @@ func (sc *Scanner) scanWord() (Token, error) {
 		return Token{TF64, ""}, nil
 	case "bool":
 		return Token{TBOOL, ""}, nil
-	case "e8":
-		return Token{TE8, ""}, nil
-	case "e16":
-		return Token{TE16, ""}, nil
-	case "e32":
-		return Token{TE32, ""}, nil
-	case "e64":
-		return Token{TE64, ""}, nil
 	case "string":
 		return Token{TSTRING, ""}, nil
 	case "data":
@@ -224,10 +216,6 @@ const (
 	TI64
 	TF32
 	TF64
-	TE8
-	TE16
-	TE32
-	TE64
 	TBOOL
 	TSTRING
 	TDATA
@@ -288,14 +276,6 @@ func (t Token) String() string {
 		return "f32"
 	case TF64:
 		return "f64"
-	case TE8:
-		return "e8"
-	case TE16:
-		return "e16"
-	case TE32:
-		return "e32"
-	case TE64:
-		return "e64"
 	case TBOOL:
 		return "bool"
 	case TSTRING:

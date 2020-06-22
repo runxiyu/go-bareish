@@ -115,14 +115,14 @@ func parseUserEnum(scanner *Scanner) (SchemaType, error) {
 		return nil, err
 	}
 	switch tok.Token {
-	case TE8:
-		kind = E8
-	case TE16:
-		kind = E16
-	case TE32:
-		kind = E32
-	case TE64:
-		kind = E64
+	case TU8:
+		kind = U8
+	case TU16:
+		kind = U16
+	case TU32:
+		kind = U32
+	case TU64:
+		kind = U64
 	default:
 		return nil, &ErrUnexpectedToken{tok, "enum type"}
 	}
@@ -223,14 +223,6 @@ func parseType(scanner *Scanner) (Type, error) {
 		return &PrimitiveType{F32}, nil
 	case TF64:
 		return &PrimitiveType{F64}, nil
-	case TE8:
-		return &PrimitiveType{E8}, nil
-	case TE16:
-		return &PrimitiveType{E16}, nil
-	case TE32:
-		return &PrimitiveType{E32}, nil
-	case TE64:
-		return &PrimitiveType{E64}, nil
 	case TBOOL:
 		return &PrimitiveType{Bool}, nil
 	case TSTRING:

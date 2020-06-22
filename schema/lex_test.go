@@ -20,10 +20,6 @@ func TestScanWords(t *testing.T) {
 		"i64": TI64,
 		"f32": TF32,
 		"f64": TF64,
-		"e8": TE8,
-		"e16": TE16,
-		"e32": TE32,
-		"e64": TE64,
 		"bool": TBOOL,
 		"string": TSTRING,
 		"data": TDATA,
@@ -90,7 +86,7 @@ func TestScanSample(t *testing.T) {
 	type PublicKey data<128>
 	type Time string # ISO T8601
 
-	enum Department e8 {
+	enum Department u8 {
 		ACCOUNTING
 		ADMINISTRATION
 		CUSTOMER_SERVICE
@@ -116,7 +112,7 @@ func TestScanSample(t *testing.T) {
 		{TTYPE, ""}, {TNAME, "PublicKey"}, {TDATA, ""},
 			{TLANGLE, ""}, {TINTEGER, "128"}, {TRANGLE, ""},
 		{TTYPE, ""}, {TNAME, "Time"}, {TSTRING, ""},
-		{TENUM, ""}, {TNAME, "Department"}, {TE8, ""}, {TLBRACE, ""},
+		{TENUM, ""}, {TNAME, "Department"}, {TU8, ""}, {TLBRACE, ""},
 			{TNAME, "ACCOUNTING"},
 			{TNAME, "ADMINISTRATION"},
 			{TNAME, "CUSTOMER_SERVICE"},

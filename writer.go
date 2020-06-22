@@ -59,22 +59,6 @@ func (w *Writer) WriteBool(b bool) error {
 	return binary.Write(w.base, binary.LittleEndian, b)
 }
 
-func (w *Writer) WriteE8(e uint8) error {
-	return w.WriteU8(e)
-}
-
-func (w *Writer) WriteE16(e uint16) error {
-	return w.WriteU16(e)
-}
-
-func (w *Writer) WriteE32(e uint32) error {
-	return w.WriteU32(e)
-}
-
-func (w *Writer) WriteE64(e uint64) error {
-	return w.WriteU64(e)
-}
-
 func (w *Writer) WriteString(str string) error {
 	return w.WriteData([]byte(str))
 }

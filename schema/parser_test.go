@@ -219,7 +219,7 @@ func TestParseNamedType(t *testing.T) {
 
 func TestParseEnumType(t *testing.T) {
 	types, err := Parse(strings.NewReader(`
-		enum MyEnum e8 {
+		enum MyEnum u8 {
 			ACCOUNTING
 			ADMINISTRATION
 			CUSTOMER_SERVICE
@@ -234,7 +234,7 @@ func TestParseEnumType(t *testing.T) {
 	assert.IsType(t, new(UserDefinedEnum), ty)
 	ude := ty.(*UserDefinedEnum)
 	assert.Equal(t, "MyEnum", ude.Name())
-	assert.Equal(t, E8, ude.Kind())
+	assert.Equal(t, U8, ude.Kind())
 
 	assert.Len(t, ude.Values(), 5)
 	val := ude.Values()[0]

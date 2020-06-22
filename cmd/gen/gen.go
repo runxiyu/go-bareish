@@ -201,14 +201,6 @@ func primitiveType(kind schema.TypeKind) string {
 		return "int32"
 	case schema.I64:
 		return "int64"
-	case schema.E8:
-		return "uint8"
-	case schema.E16:
-		return "uint16"
-	case schema.E32:
-		return "uint32"
-	case schema.E64:
-		return "uint64"
 	case schema.F32:
 		return "float32"
 	case schema.F64:
