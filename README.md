@@ -1,6 +1,6 @@
 # go-bare [![GoDoc](https://godoc.org/git.sr.ht/~sircmpwn/go-bare?status.svg)](https://godoc.org/git.sr.ht/~sircmpwn/go-bare) [![builds.sr.ht status](https://builds.sr.ht/~sircmpwn/go-bare.svg)](https://builds.sr.ht/~sircmpwn/go-bare?)
 
-An implementation of the [BARE](https://git.sr.ht/~sircmpwn/bare) message format
+An implementation of the [BARE](https://baremessages.org) message format
 for Go.
 
 **Status**
