@@ -166,7 +166,8 @@ func parseUserEnum(scanner *Scanner) (SchemaType, error) {
 			}
 
 			v, _ := strconv.ParseUint(tok.Value, 10, 32)
-			ev.value = uint(v)
+			value = uint(v)
+			ev.value = value
 		} else {
 			ev.value = value
 			value += 1
