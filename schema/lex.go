@@ -161,6 +161,8 @@ func (sc *Scanner) scanWord() (Token, error) {
 		return Token{TSTRING, ""}, nil
 	case "data":
 		return Token{TDATA, ""}, nil
+	case "void":
+		return Token{TVOID, ""}, nil
 	case "optional":
 		return Token{TOPTIONAL, ""}, nil
 	case "map":
@@ -225,6 +227,7 @@ const (
 	TBOOL
 	TSTRING
 	TDATA
+	TVOID
 	TMAP
 	TOPTIONAL
 
@@ -292,6 +295,8 @@ func (t Token) String() string {
 		return "string"
 	case TDATA:
 		return "data"
+	case TVOID:
+		return "void"
 	case TMAP:
 		return "map"
 	case TOPTIONAL:

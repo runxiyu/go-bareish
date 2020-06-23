@@ -233,6 +233,8 @@ func parseType(scanner *Scanner) (Type, error) {
 		return &PrimitiveType{Bool}, nil
 	case TSTRING:
 		return &PrimitiveType{String}, nil
+	case TVOID:
+		return &PrimitiveType{Void}, nil
 	case TOPTIONAL:
 		scanner.PushBack(tok)
 		return parseOptionalType(scanner)

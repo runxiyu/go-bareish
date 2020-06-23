@@ -25,6 +25,7 @@ func TestScanWords(t *testing.T) {
 		"bool": TBOOL,
 		"string": TSTRING,
 		"data": TDATA,
+		"void": TVOID,
 		"map": TMAP,
 		"optional": TOPTIONAL,
 	}

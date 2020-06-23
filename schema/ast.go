@@ -67,14 +67,15 @@ const (
 	F64
 	Bool
 	String
-	// [len]type
-	Array
-	// []type
-	Slice
+	Void
 	// data
 	Data
 	// data<length>
 	DataFixed
+	// [len]type
+	Array
+	// []type
+	Slice
 	// optional<type>
 	Optional
 	// data<len>

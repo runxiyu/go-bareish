@@ -32,7 +32,9 @@ type Employee {
 	metadata: map[string]data
 }
 
-type Person (Customer | Employee)
+type TerminatedEmployee void
+
+type Person (Customer | Employee | TerminatedEmployee)
 
 type Address {
 	address: [4]string

@@ -210,6 +210,8 @@ func primitiveType(kind schema.TypeKind) string {
 		return "bool"
 	case schema.String:
 		return "string"
+	case schema.Void:
+		return "struct{}"
 	}
 	panic(fmt.Errorf("Invalid primitive type %d", kind))
 }

@@ -65,5 +65,7 @@ Hire date: %s
 		person.Address.City, person.Address.State,
 		person.Address.Country, person.Department.String(),
 		time.Time(person.HireDate).Format(time.RFC3339))
+	case *TerminatedEmployee:
+		log.Println("Terminated employee (no data)")
 	}
 }

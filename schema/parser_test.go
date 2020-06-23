@@ -28,6 +28,7 @@ func TestParsePrimitives(t *testing.T) {
 		{ "MyF64", F64 },
 		{ "MyBool", Bool },
 		{ "MyString", String },
+		{ "MyVoid", Void },
 	}
 
 	types, err := Parse(strings.NewReader(`
@@ -45,6 +46,7 @@ func TestParsePrimitives(t *testing.T) {
 		type MyF64 f64
 		type MyBool bool
 		type MyString string
+		type MyVoid void
 	`))
 	assert.NoError(t, err)
 	assert.Len(t, types, len(reference))
