@@ -1,6 +1,7 @@
 package bare
 
 import (
+	"io"
 	"reflect"
 	"testing"
 
@@ -16,9 +17,10 @@ func init() {
 type Name string
 type Age int
 
-type NameAge interface { Union }
-func (n Name) IsUnion(){}
-func (a Age) IsUnion(){}
+type NameAge interface{ Union }
+
+func (n Name) IsUnion() {}
+func (a Age) IsUnion()  {}
 
 func TestMarshalValue(t *testing.T) {
 	var (
@@ -137,7 +139,7 @@ func TestMarshalOptional(t *testing.T) {
 }
 
 func TestMarshalStruct(t *testing.T) {
-	type Coordinates struct { X, Y, Z uint }
+	type Coordinates struct{ X, Y, Z uint }
 	coords := Coordinates{1, 2, 3}
 	reference := []byte{0x01, 0x02, 0x03}
 	data, err := Marshal(&coords)
@@ -236,4 +238,23 @@ func TestMarshalUnion(t *testing.T) {
 	assert.Nil(t, err)
 	reference = []byte{0x01, 0x30}
 	assert.Equal(t, reference, data)
+}
+
+func TestStream(t *testing.T) {
+	//Test that you can stream marshalls over the same io.Writer and stream unmarshals on the io.Reader
+	var err error
+	r, wp := io.Pipe()
+	w := NewWriter(wp)
+	go func() {
+		for x := 0; x < 10; x++ {
+			age := Age(x)
+			MarshalWriter(w, &age)
+		}
+	}()
+	var newAge Age
+	for x := 0; x < 10; x++ {
+		err = UnmarshalReader(r, &newAge)
+		assert.Nil(t, err)
+		assert.Equal(t, x, int(newAge))
+	}
 }
