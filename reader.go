@@ -2,8 +2,10 @@ package bare
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"math"
+	"unicode/utf8"
 )
 
 // A Reader for BARE primitive types.
@@ -117,15 +119,25 @@ func (r *Reader) ReadF64() (float64, error) {
 }
 
 func (r *Reader) ReadBool() (bool, error) {
-	var b bool
-	err := binary.Read(r.base, binary.LittleEndian, &b)
-	return b, err
+	b, err := r.ReadU8()
+	if err != nil {
+		return false, err
+	}
+
+	if b > 1 {
+		return false, fmt.Errorf("Invalid bool value: %#x", b)
+	}
+
+	return b == 1, nil
 }
 
 func (r *Reader) ReadString() (string, error) {
 	buf, err := r.ReadData()
 	if err != nil {
 		return "", err
+	}
+	if !utf8.Valid(buf) {
+		return "", ErrInvalidStr
 	}
 	return string(buf), nil
 }

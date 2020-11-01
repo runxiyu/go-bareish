@@ -151,9 +151,8 @@ func TestReadBool(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, v, true)
 
-	v, err = r.ReadBool()
-	assert.Nil(t, err)
-	assert.Equal(t, v, true)
+	_, err = r.ReadBool()
+	assert.EqualError(t, err, "Invalid bool value: 0x2")
 
 	_, err = r.ReadBool()
 	assert.Equal(t, err, io.EOF)
@@ -163,10 +162,17 @@ func TestReadString(t *testing.T) {
 	b := bytes.NewBuffer([]byte{0x1B, 0xE3, 0x81, 0x93, 0xE3, 0x82, 0x93, 0xE3,
 		0x81, 0xAB, 0xE3, 0x81, 0xA1, 0xE3, 0x81, 0xAF, 0xE3, 0x80, 0x81, 0xE4,
 		0xB8, 0x96, 0xE7, 0x95, 0x8C, 0xEF, 0xBC, 0x81})
+
+	b.Write([]byte{0x3, 66, 250, 67}) // Invalid sequence
+
 	r := NewReader(b)
 	v, err := r.ReadString()
 	assert.Nil(t, err)
 	assert.Equal(t, v, "こんにちは、世界！")
+
+	_, err = r.ReadString()
+	assert.EqualError(t, err, ErrInvalidStr.Error())
+
 	_, err = r.ReadString()
 	assert.Equal(t, err, io.EOF)
 }

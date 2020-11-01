@@ -7,7 +7,6 @@ import (
 	"io"
 	"reflect"
 	"sync"
-	"unicode/utf8"
 )
 
 // A type which implements this interface will be responsible for unmarshaling
@@ -106,6 +105,10 @@ func decodeOptional(t reflect.Type) decodeFunc {
 		s, err := r.ReadU8()
 		if err != nil {
 			return err
+		}
+
+		if s > 1 {
+			return fmt.Errorf("Invalid optional value: %#x", s)
 		}
 
 		if s == 0 {
@@ -332,9 +335,6 @@ func decodeBool(r *Reader, v reflect.Value) error {
 
 func decodeString(r *Reader, v reflect.Value) error {
 	s, err := r.ReadString()
-	if !utf8.ValidString(s) {
-		return errors.New("invalid utf-8")
-	}
 	v.SetString(s)
 	return err
 }

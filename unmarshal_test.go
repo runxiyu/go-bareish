@@ -102,8 +102,7 @@ func TestUnmarshalValue(t *testing.T) {
 	assert.True(t, b, "Expected Unmarshal to read true")
 
 	err = Unmarshal(payloads[12][2:], &b)
-	assert.Nil(t, err, "Expected Unmarshal to return without error")
-	assert.True(t, b, "Expected Unmarshal to read true")
+	assert.EqualError(t, err, "Invalid bool value: 0x2")
 
 	err = Unmarshal(payloads[13], &str)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
@@ -120,6 +119,9 @@ func TestUnmarshalOptional(t *testing.T) {
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 	assert.NotNil(t, val, "Expected Unmarshal to read non-nil value")
 	assert.Equal(t, uint32(0xDEADBEEF), *val, "Expected Unmarshal to read 0xDEADBEEF")
+
+	err = Unmarshal([]byte{0x02}, &val)
+	assert.EqualError(t, err, "Invalid optional value: 0x2")
 }
 
 func TestUnmarshalStruct(t *testing.T) {
@@ -168,6 +170,17 @@ func TestUnmarshalMap(t *testing.T) {
 	assert.Equal(t, uint8(0x11), val[uint8(0x01)], "Expected Unmarshal to read 0x01 -> 0x11")
 	assert.Equal(t, uint8(0x22), val[uint8(0x02)], "Expected Unmarshal to read 0x02 -> 0x22")
 	assert.Equal(t, uint8(0x33), val[uint8(0x03)], "Expected Unmarshal to read 0x03 -> 0x33")
+
+	t.Run("rejects duplicate keys", func(t *testing.T) {
+		payload = []byte{
+			0x02,
+			0x01, 0x13,
+			0x01, 0x37,
+		}
+		err = Unmarshal(payload, &val)
+		assert.EqualError(t, err, "Encountered duplicate map key: 1")
+	})
+
 }
 
 func TestUnmarshalUnion(t *testing.T) {
@@ -187,6 +200,10 @@ func TestUnmarshalUnion(t *testing.T) {
 	age, ok := val.(*Age)
 	assert.True(t, ok)
 	assert.Equal(t, Age(24), *age)
+
+	payload = []byte{0x13, 0x37}
+	err = Unmarshal(payload, &val)
+	assert.EqualError(t, err, "Invalid union tag 19 for type NameAge")
 }
 
 func TestUnmarshalCustom(t *testing.T) {
