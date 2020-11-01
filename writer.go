@@ -7,18 +7,18 @@ import (
 
 // A Writer for BARE primitive types.
 type Writer struct {
-	base io.Writer
+	base    io.Writer
+	scratch [binary.MaxVarintLen64]byte
 }
 
 // Returns a new BARE primitive writer wrapping the given io.Writer.
 func NewWriter(base io.Writer) *Writer {
-	return &Writer{base}
+	return &Writer{base: base}
 }
 
 func (w *Writer) WriteUint(i uint64) error {
-	var buf [binary.MaxVarintLen64]byte
-	n := binary.PutUvarint(buf[:], i)
-	_, err := w.base.Write(buf[:n])
+	n := binary.PutUvarint(w.scratch[:], i)
+	_, err := w.base.Write(w.scratch[:n])
 	return err
 }
 
