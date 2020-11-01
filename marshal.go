@@ -14,12 +14,26 @@ type Marshalable interface {
 	Marshal(w *Writer) error
 }
 
+var encoderBufferPool = sync.Pool{
+	New: func() interface{} {
+		buf := &bytes.Buffer{}
+		buf.Grow(32)
+		return buf
+	},
+}
+
 // Marshals a value (val, which must be a pointer) into a BARE message.
 //
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
 // respectively, for message compatibility with both 32-bit and 64-bit systems.
 func Marshal(val interface{}) ([]byte, error) {
-	b := bytes.NewBuffer([]byte{})
+	// reuse buffers from previous serializations
+	b := encoderBufferPool.Get().(*bytes.Buffer)
+	defer func() {
+		b.Reset()
+		encoderBufferPool.Put(b)
+	}()
+
 	w := NewWriter(b)
 	err := MarshalWriter(w, val)
 	return b.Bytes(), err
