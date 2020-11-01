@@ -164,6 +164,10 @@ func decodeSlice(t reflect.Type) decodeFunc {
 			return err
 		}
 
+		if len > maxArrayLength {
+			return fmt.Errorf("Array length %d exceeds configured limit of %d", len, maxArrayLength)
+		}
+
 		v.Set(reflect.MakeSlice(t, int(len), int(len)))
 
 		for i := 0; i < int(len); i++ {
@@ -186,6 +190,10 @@ func decodeMap(t reflect.Type) decodeFunc {
 		size, err := r.ReadUint()
 		if err != nil {
 			return err
+		}
+
+		if size > maxMapSize {
+			return fmt.Errorf("Map size %d exceeds configured limit of %d", size, maxMapSize)
 		}
 
 		v.Set(reflect.MakeMapWithSize(t, int(size)))

@@ -154,6 +154,10 @@ func TestUnmarshalSlice(t *testing.T) {
 	assert.Equal(t, uint8(0x22), val[1], "Expected Unmarshal to read 0x22")
 	assert.Equal(t, uint8(0x33), val[2], "Expected Unmarshal to read 0x33")
 	assert.Equal(t, uint8(0x44), val[3], "Expected Unmarshal to read 0x44")
+
+	MaxArrayLength(64)
+	err = Unmarshal([]byte{100}, &val)
+	assert.EqualError(t, err, "Array length 100 exceeds configured limit of 64")
 }
 
 func TestUnmarshalMap(t *testing.T) {
@@ -181,6 +185,12 @@ func TestUnmarshalMap(t *testing.T) {
 		assert.EqualError(t, err, "Encountered duplicate map key: 1")
 	})
 
+	t.Run("respects size limits", func(t *testing.T) {
+		MaxMapSize(64)
+		payload = []byte{100}
+		err = Unmarshal(payload, &val)
+		assert.EqualError(t, err, "Map size 100 exceeds configured limit of 64")
+	})
 }
 
 func TestUnmarshalUnion(t *testing.T) {
