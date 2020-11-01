@@ -188,3 +188,12 @@ func TestUnmarshalUnion(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, Age(24), *age)
 }
+
+func TestUnmarshalCustom(t *testing.T) {
+	var val Custom
+	payload := []byte{0x0, 0x42}
+
+	err := Unmarshal(payload, &val)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, Custom(0x42), val)
+}

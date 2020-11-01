@@ -22,6 +22,21 @@ type NameAge interface{ Union }
 func (n Name) IsUnion() {}
 func (a Age) IsUnion()  {}
 
+type Custom uint8
+
+func (c *Custom) Unmarshal(r *Reader) error {
+	u, err := r.ReadU16()
+	if err != nil {
+		return err
+	}
+	*c = Custom(u >> 8)
+	return nil
+}
+
+func (c *Custom) Marshal(w *Writer) error {
+	return w.WriteU16(uint16(*c) << 8)
+}
+
 func TestMarshalValue(t *testing.T) {
 	var (
 		data []byte
@@ -238,6 +253,13 @@ func TestMarshalUnion(t *testing.T) {
 	assert.Nil(t, err)
 	reference = []byte{0x01, 0x30}
 	assert.Equal(t, reference, data)
+}
+
+func TestMarshalCustom(t *testing.T) {
+	var val = Custom(0x42)
+	data, err := Marshal(&val)
+	assert.Nil(t, err)
+	assert.Equal(t, []byte{0x0, 0x42}, data)
 }
 
 func TestStream(t *testing.T) {
