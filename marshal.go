@@ -212,7 +212,13 @@ func encodeUnion(t reflect.Type) encodeFunc {
 	}
 
 	return func(w *Writer, v reflect.Value) error {
-		tag, ok := ut.tags[v.Elem().Type()]
+		t := v.Elem().Type()
+		if t.Kind() == reflect.Ptr {
+			// If T is a valid union value type, *T is valid too.
+			t = t.Elem()
+			v = v.Elem()
+		}
+		tag, ok := ut.tags[t]
 		if !ok {
 			return fmt.Errorf("Invalid union value: %s", v.Elem().String())
 		}

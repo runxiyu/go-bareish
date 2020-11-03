@@ -255,6 +255,27 @@ func TestMarshalUnion(t *testing.T) {
 	assert.Equal(t, reference, data)
 }
 
+func TestRoundtrip(t *testing.T) {
+	type T struct {
+		// Ensure that unions roundtrip correctly.
+		NameAge NameAge
+	}
+	val := T{
+		NameAge: Age(25),
+	}
+	data, err := Marshal(&val)
+	assert.Nil(t, err)
+
+	var val2 T
+	err = Unmarshal(data, &val2)
+	assert.Nil(t, err)
+
+	data2, err := Marshal(&val2)
+	assert.Nil(t, err)
+
+	assert.Equal(t, data, data2)
+}
+
 func TestMarshalCustom(t *testing.T) {
 	var val = Custom(0x42)
 	data, err := Marshal(&val)
