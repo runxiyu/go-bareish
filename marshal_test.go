@@ -162,6 +162,19 @@ func TestMarshalStruct(t *testing.T) {
 	assert.Equal(t, reference, data)
 }
 
+func TestMarshalOmittedFields(t *testing.T) {
+	type Coordinates struct {
+		X uint
+		Y uint
+		Z uint `bare:"-"`
+	}
+	coords := Coordinates{1, 2, 3}
+	reference := []byte{0x01, 0x02}
+	data, err := Marshal(&coords)
+	assert.Nil(t, err)
+	assert.Equal(t, reference, data)
+}
+
 func TestMarshalArray(t *testing.T) {
 	val := [4]uint8{0x11, 0x22, 0x33, 0x44}
 	reference := []byte{0x11, 0x22, 0x33, 0x44}

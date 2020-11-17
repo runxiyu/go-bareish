@@ -26,6 +26,11 @@ var encoderBufferPool = sync.Pool{
 //
 // Go "int" and "uint" types are represented as BARE u32 and i32 types
 // respectively, for message compatibility with both 32-bit and 64-bit systems.
+//
+// The encoding of each struct field can be customized by the format string
+// stored under the "bare" key in the struct field's tag.
+//
+// As a special case, if the field tag is "-", the field is always omitted.
 func Marshal(val interface{}) ([]byte, error) {
 	// reuse buffers from previous serializations
 	b := encoderBufferPool.Get().(*bytes.Buffer)
@@ -127,11 +132,17 @@ func encodeStruct(t reflect.Type) encodeFunc {
 	encoders := make([]encodeFunc, n)
 	for i := 0; i < n; i++ {
 		field := t.Field(i)
+		if field.Tag.Get("bare") == "-" {
+			continue
+		}
 		encoders[i] = getEncoder(field.Type)
 	}
 
 	return func(w *Writer, v reflect.Value) error {
 		for i := 0; i < n; i++ {
+			if encoders[i] == nil {
+				continue
+			}
 			err := encoders[i](w, v.Field(i))
 			if err != nil {
 				return err

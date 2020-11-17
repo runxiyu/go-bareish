@@ -135,6 +135,21 @@ func TestUnmarshalStruct(t *testing.T) {
 	assert.Equal(t, uint(3), coords.Z, "Expected Unmarshal to read {1, 2, 3}")
 }
 
+func TestUnmarshalOmittedFields(t *testing.T) {
+	type Coordinates struct {
+		X uint
+		Y uint
+		Z uint `bare:"-"`
+	}
+	payload := []byte{0x01, 0x02}
+	var coords Coordinates
+	err := Unmarshal(payload, &coords)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, uint(1), coords.X, "Expected Unmarshal to read {1, 2}")
+	assert.Equal(t, uint(2), coords.Y, "Expected Unmarshal to read {1, 2}")
+	assert.Equal(t, uint(0), coords.Z, "Expected Unmarshal to ignore field")
+}
+
 func TestUnmarshalArray(t *testing.T) {
 	var val [4]uint8
 	err := Unmarshal([]byte{0x11, 0x22, 0x33, 0x44}, &val)

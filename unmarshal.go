@@ -125,11 +125,17 @@ func decodeStruct(t reflect.Type) decodeFunc {
 	decoders := make([]decodeFunc, n)
 	for i := 0; i < n; i++ {
 		field := t.Field(i)
+		if field.Tag.Get("bare") == "-" {
+			continue
+		}
 		decoders[i] = getDecoder(field.Type)
 	}
 
 	return func(r *Reader, v reflect.Value) error {
 		for i := 0; i < n; i++ {
+			if decoders[i] == nil {
+				continue
+			}
 			err := decoders[i](r, v.Field(i))
 			if err != nil {
 				return err
