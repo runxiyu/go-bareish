@@ -2,7 +2,9 @@ package bare
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
+	"math"
 )
 
 // A Writer for BARE primitive types.
@@ -62,10 +64,16 @@ func (w *Writer) WriteI64(i int64) error {
 }
 
 func (w *Writer) WriteF32(f float32) error {
+	if math.IsNaN(float64(f)) {
+		return fmt.Errorf("NaN is not permitted in BARE floats")
+	}
 	return binary.Write(w.base, binary.LittleEndian, f)
 }
 
 func (w *Writer) WriteF64(f float64) error {
+	if math.IsNaN(f) {
+		return fmt.Errorf("NaN is not permitted in BARE floats")
+	}
 	return binary.Write(w.base, binary.LittleEndian, f)
 }
 

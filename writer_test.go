@@ -2,6 +2,7 @@ package bare
 
 import (
 	"bytes"
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -99,6 +100,9 @@ func TestWriteF32(t *testing.T) {
 	err := w.WriteF32(float32(1337.42))
 	assert.Nil(t, err)
 	assert.Equal(t, []byte{0x71, 0x2D, 0xA7, 0x44}, b.Bytes())
+
+	err = w.WriteF32(float32(math.NaN()))
+	assert.NotNil(t, err)
 }
 
 func TestWriteF64(t *testing.T) {
@@ -107,6 +111,9 @@ func TestWriteF64(t *testing.T) {
 	err := w.WriteF64(float64(133713371337.42424242))
 	assert.Nil(t, err)
 	assert.Equal(t, []byte{0x9B, 0x6C, 0xC9, 0x20, 0xF0, 0x21, 0x3F, 0x42}, b.Bytes())
+
+	err = w.WriteF64(math.NaN())
+	assert.NotNil(t, err)
 }
 
 func TestWriteBool(t *testing.T) {

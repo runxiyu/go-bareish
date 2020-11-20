@@ -110,12 +110,20 @@ func (r *Reader) ReadI64() (int64, error) {
 
 func (r *Reader) ReadF32() (float32, error) {
 	u, err := r.ReadU32()
-	return math.Float32frombits(u), err
+	f := math.Float32frombits(u)
+	if math.IsNaN(float64(f)) {
+		return 0.0, fmt.Errorf("NaN is not permitted in BARE floats")
+	}
+	return f, err
 }
 
 func (r *Reader) ReadF64() (float64, error) {
 	u, err := r.ReadU64()
-	return math.Float64frombits(u), err
+	f := math.Float64frombits(u)
+	if math.IsNaN(f) {
+		return 0.0, fmt.Errorf("NaN is not permitted in BARE floats")
+	}
+	return f, err
 }
 
 func (r *Reader) ReadBool() (bool, error) {
