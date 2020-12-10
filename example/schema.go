@@ -79,7 +79,7 @@ func (t *Address) Encode() ([]byte, error) {
 	return bare.Marshal(t)
 }
 
-type Department uint8
+type Department uint
 
 const (
 	ACCOUNTING       Department = 0
