@@ -141,6 +141,8 @@ var funcs = template.FuncMap{
 			return "uint32"
 		case schema.U64:
 			return "uint64"
+		case schema.UINT:
+			return "uint"
 		case schema.I8:
 			return "int8"
 		case schema.I16:
@@ -149,6 +151,8 @@ var funcs = template.FuncMap{
 			return "int32"
 		case schema.I64:
 			return "int64"
+		case schema.INT:
+			return "int"
 		case schema.F32:
 			return "float32"
 		case schema.F64:
