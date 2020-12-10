@@ -92,6 +92,65 @@ const (
 	UserType
 )
 
+func (tk TypeKind) String() string {
+	switch tk {
+	case UINT:
+		return "UINT";
+	case U8:
+		return "U8";
+	case U16:
+		return "U16";
+	case U32:
+		return "U32";
+	case U64:
+		return "U64";
+	case INT:
+		return "INT";
+	case I8:
+		return "I8";
+	case I16:
+		return "I16";
+	case I32:
+		return "I32";
+	case I64:
+		return "I64";
+	case F32:
+		return "F32";
+	case F64:
+		return "F64";
+	case Bool:
+		return "Bool";
+	case String:
+		return "String";
+	case Void:
+		return "Void";
+	case Data:
+		return "Data";
+	case DataFixed:
+		return "DataFixed";
+	case Array:
+		return "Array";
+	case Slice:
+		return "Slice";
+	case Optional:
+		return "Optional";
+	case DataArray:
+		return "DataArray";
+	case DataSlice:
+		return "DataSlice";
+	case Map:
+		return "Map";
+	case Union:
+		return "Union";
+	case Struct:
+		return "Struct";
+	case UserType:
+		return "UserType";
+	default:
+		return "?"
+	}
+}
+
 type Type interface {
 	Kind() TypeKind
 }
