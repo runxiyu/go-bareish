@@ -41,7 +41,11 @@ func Marshal(val interface{}) ([]byte, error) {
 
 	w := NewWriter(b)
 	err := MarshalWriter(w, val)
-	return b.Bytes(), err
+
+	msg := make([]byte, b.Len())
+	copy(msg, b.Bytes())
+
+	return msg, err
 }
 
 // Marshals a value (val, which must be a pointer) into a BARE message and
