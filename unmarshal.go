@@ -23,21 +23,21 @@ type Unmarshalable interface {
 func Unmarshal(data []byte, val interface{}) error {
 	b := bytes.NewReader(data)
 	r := NewReader(b)
-	return unmarshalReader(r, val)
+	return UnmarshalBareReader(r, val)
 }
 
 // Unmarshals a BARE message into value (val, which must be a pointer), from a
 // reader. See Unmarshal for details.
 func UnmarshalReader(r io.Reader, val interface{}) error {
 	r = newLimitedReader(r)
-	return unmarshalReader(NewReader(r), val)
+	return UnmarshalBareReader(NewReader(r), val)
 }
 
 type decodeFunc func(r *Reader, v reflect.Value) error
 
 var decodeFuncCache sync.Map // map[reflect.Type]decodeFunc
 
-func unmarshalReader(r *Reader, val interface{}) error {
+func UnmarshalBareReader(r *Reader, val interface{}) error {
 	t := reflect.TypeOf(val)
 	v := reflect.ValueOf(val)
 	if t.Kind() != reflect.Ptr {
