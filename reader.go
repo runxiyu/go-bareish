@@ -8,35 +8,35 @@ import (
 	"unicode/utf8"
 )
 
+type byteReader interface {
+	io.Reader
+	io.ByteReader
+}
+
 // A Reader for BARE primitive types.
 type Reader struct {
-	base interface {
-		io.Reader
-		io.ByteReader
-	}
+	base    byteReader
 	scratch [8]byte
 }
 
-type bufferedReader struct {
-	base   io.Reader
-	buffer []byte
+type simpleByteReader struct {
+	io.Reader
+	scratch [1]byte
 }
 
-func (r bufferedReader) ReadByte() (byte, error) {
+func (r simpleByteReader) ReadByte() (byte, error) {
 	// using reference type here saves us allocations
-	_, err := r.Read(r.buffer)
-	return r.buffer[0], err
-}
-
-func (r bufferedReader) Read(p []byte) (int, error) {
-	return r.base.Read(p)
+	_, err := r.Read(r.scratch[:])
+	return r.scratch[0], err
 }
 
 // Returns a new BARE primitive reader wrapping the given io.Reader.
 func NewReader(base io.Reader) *Reader {
-	return &Reader{
-		base: bufferedReader{base: base, buffer: make([]byte, 1)},
+	br, ok := base.(byteReader)
+	if !ok {
+		br = simpleByteReader{Reader: base}
 	}
+	return &Reader{base: br}
 }
 
 func (r *Reader) ReadUint() (uint64, error) {
