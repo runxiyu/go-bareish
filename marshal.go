@@ -24,9 +24,6 @@ var encoderBufferPool = sync.Pool{
 
 // Marshals a value (val, which must be a pointer) into a BARE message.
 //
-// Go "int" and "uint" types are represented as BARE u32 and i32 types
-// respectively, for message compatibility with both 32-bit and 64-bit systems.
-//
 // The encoding of each struct field can be customized by the format string
 // stored under the "bare" key in the struct field's tag.
 //

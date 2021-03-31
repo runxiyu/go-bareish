@@ -17,9 +17,6 @@ type Unmarshalable interface {
 
 // Unmarshals a BARE message into val, which must be a pointer to a value of
 // the message type.
-//
-// Go "int" and "uint" types are represented as BARE u32 and i32 types
-// respectively, for message compatibility with both 32-bit and 64-bit systems.
 func Unmarshal(data []byte, val interface{}) error {
 	b := bytes.NewReader(data)
 	r := NewReader(b)
