@@ -287,6 +287,9 @@ func decodeUint(r *Reader, v reflect.Value) error {
 		var u uint64
 		u, err = r.ReadU64()
 		v.SetUint(uint64(u))
+
+	default:
+		panic("not an uint")
 	}
 
 	return err
@@ -318,6 +321,9 @@ func decodeInt(r *Reader, v reflect.Value) error {
 		var i int64
 		i, err = r.ReadI64()
 		v.SetInt(int64(i))
+
+	default:
+		panic("not an int")
 	}
 
 	return err
@@ -334,6 +340,8 @@ func decodeFloat(r *Reader, v reflect.Value) error {
 		var f float64
 		f, err = r.ReadF64()
 		v.SetFloat(f)
+	default:
+		panic("not a float")
 	}
 	return err
 }
