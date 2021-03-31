@@ -47,11 +47,13 @@ func TestMarshalValue(t *testing.T) {
 		u32 uint32  = 0xDEADBEEF
 		u64 uint64  = 0xCAFEBABEDEADBEEF
 		u   uint    = 0xDEADBEEF
+		vu  Uint    = 0xDEADBEEF
 		i8  int8    = -42
 		i16 int16   = -1234
 		i32 int32   = -12345678
 		i64 int64   = -12345678987654321
 		i   int     = -12345678
+		vi  Int     = -12345678
 		f32 float32 = 1337.42
 		f64 float64 = 133713371337.42424242
 		b   bool    = true
@@ -98,6 +100,10 @@ func TestMarshalValue(t *testing.T) {
 	assert.Nil(t, err, "Expected Marshal to return without error")
 	assert.Equal(t, payloads[4], data)
 
+	data, err = Marshal(&vu)
+	assert.Nil(t, err, "Expected Marshal to return without error")
+	assert.Equal(t, payloads[4], data)
+
 	data, err = Marshal(&i8)
 	assert.Nil(t, err, "Expected Marshal to return without error")
 	assert.Equal(t, payloads[5], data)
@@ -115,6 +121,10 @@ func TestMarshalValue(t *testing.T) {
 	assert.Equal(t, payloads[8], data)
 
 	data, err = Marshal(&i)
+	assert.Nil(t, err, "Expected Marshal to return without error")
+	assert.Equal(t, payloads[9], data)
+
+	data, err = Marshal(&vi)
 	assert.Nil(t, err, "Expected Marshal to return without error")
 	assert.Equal(t, payloads[9], data)
 

@@ -244,7 +244,7 @@ func encodeUnion(t reflect.Type) encodeFunc {
 }
 
 func encodeUint(w *Writer, v reflect.Value) error {
-	switch v.Type().Kind() {
+	switch getIntKind(v.Type()) {
 	case reflect.Uint:
 		return w.WriteUint(v.Uint())
 
@@ -265,7 +265,7 @@ func encodeUint(w *Writer, v reflect.Value) error {
 }
 
 func encodeInt(w *Writer, v reflect.Value) error {
-	switch v.Type().Kind() {
+	switch getIntKind(v.Type()) {
 	case reflect.Int:
 		return w.WriteInt(v.Int())
 

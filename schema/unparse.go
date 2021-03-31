@@ -10,6 +10,11 @@ import (
 	"git.sr.ht/~sircmpwn/go-bare"
 )
 
+var (
+	intType = reflect.TypeOf(bare.Int(0))
+	uintType = reflect.TypeOf(bare.Uint(0))
+)
+
 // Given a pointer to a value, returns the BARE schema language representation
 // for that value type.
 //
@@ -38,6 +43,13 @@ func SchemaForType(t reflect.Type) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("optional<%s>", schema), nil
+	}
+
+	switch t {
+	case intType:
+		return "int", nil
+	case uintType:
+		return "uint", nil
 	}
 
 	switch t.Kind() {

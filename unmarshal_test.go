@@ -15,11 +15,13 @@ func TestUnmarshalValue(t *testing.T) {
 		u32 uint32
 		u64 uint64
 		u   uint
+		vu  Uint
 		i8  int8
 		i16 int16
 		i32 int32
 		i64 int64
 		i   int
+		vi  Int
 		f32 float32
 		f64 float64
 		b   bool
@@ -65,6 +67,10 @@ func TestUnmarshalValue(t *testing.T) {
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 	assert.Equal(t, uint(0xDEADBEEF), u, "Expected Unmarshal to read 0xDEADBEEF")
 
+	err = Unmarshal(payloads[4], &vu)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, Uint(0xDEADBEEF), vu, "Expected Unmarshal to read 0xDEADBEEF")
+
 	err = Unmarshal(payloads[5], &i8)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 	assert.Equal(t, int8(-42), i8, "Expected Unmarshal to read -42")
@@ -84,6 +90,10 @@ func TestUnmarshalValue(t *testing.T) {
 	err = Unmarshal(payloads[9], &i)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")
 	assert.Equal(t, int(-12345678), i, "Expected Unmarshal to read -12345678")
+
+	err = Unmarshal(payloads[9], &vi)
+	assert.Nil(t, err, "Expected Unmarshal to return without error")
+	assert.Equal(t, Int(-12345678), vi, "Expected Unmarshal to read -12345678")
 
 	err = Unmarshal(payloads[10], &f32)
 	assert.Nil(t, err, "Expected Unmarshal to return without error")

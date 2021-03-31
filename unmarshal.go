@@ -263,7 +263,7 @@ func decodeUnion(t reflect.Type) decodeFunc {
 
 func decodeUint(r *Reader, v reflect.Value) error {
 	var err error
-	switch v.Type().Kind() {
+	switch getIntKind(v.Type()) {
 	case reflect.Uint:
 		var u uint64
 		u, err = r.ReadUint()
@@ -297,7 +297,7 @@ func decodeUint(r *Reader, v reflect.Value) error {
 
 func decodeInt(r *Reader, v reflect.Value) error {
 	var err error
-	switch v.Type().Kind() {
+	switch getIntKind(v.Type()) {
 	case reflect.Int:
 		var i int64
 		i, err = r.ReadInt()
