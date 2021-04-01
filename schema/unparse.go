@@ -62,7 +62,7 @@ func SchemaForType(t reflect.Type) (string, error) {
 	case reflect.Uint64:
 		return "u64", nil
 	case reflect.Uint:
-		return "u32", nil
+		return "uint", nil
 	case reflect.Int8:
 		return "i8", nil
 	case reflect.Int16:
@@ -72,7 +72,7 @@ func SchemaForType(t reflect.Type) (string, error) {
 	case reflect.Int64:
 		return "i64", nil
 	case reflect.Int:
-		return "i32", nil
+		return "int", nil
 	case reflect.Float32:
 		return "f32", nil
 	case reflect.Float64:
