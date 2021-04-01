@@ -45,7 +45,7 @@ func TestUnparseValue(t *testing.T) {
 
 	schema, err = SchemaFor(&u)
 	assert.Nil(t, err, "Expected SchemaFor to return without error")
-	assert.Equal(t, schema, "u32", "Expected SchemaFor to return u32")
+	assert.Equal(t, schema, "uint", "Expected SchemaFor to return u32")
 
 	schema, err = SchemaFor(&i8)
 	assert.Nil(t, err, "Expected SchemaFor to return without error")
@@ -65,7 +65,7 @@ func TestUnparseValue(t *testing.T) {
 
 	schema, err = SchemaFor(&i)
 	assert.Nil(t, err, "Expected SchemaFor to return without error")
-	assert.Equal(t, schema, "i32", "Expected SchemaFor to return i32")
+	assert.Equal(t, schema, "int", "Expected SchemaFor to return i32")
 
 	schema, err = SchemaFor(&f32)
 	assert.Nil(t, err, "Expected SchemaFor to return without error")
