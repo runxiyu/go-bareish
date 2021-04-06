@@ -51,7 +51,7 @@ same package. See `examples/time.go` for an example of such an implementation.
 For many use-cases, it may be more convenient to write your types manually and
 use Marshal and Unmarshal directly. If you choose this approach, you may also
 use `git.sr.ht/~sircmpwn/go-bare/schema.SchemaFor` to generate a BARE schema
-langauge document describing your structs.
+language document describing your structs.
 
 ```go
 package main
