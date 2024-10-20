@@ -1,11 +1,18 @@
-# go-bare [![godocs.io](https://godocs.io/git.sr.ht/~sircmpwn/go-bare?status.svg)](https://godocs.io/git.sr.ht/~sircmpwn/go-bare) [![builds.sr.ht status](https://builds.sr.ht/~sircmpwn/go-bare.svg)](https://builds.sr.ht/~sircmpwn/go-bare?)
+# go-barish
 
-An implementation of the [BARE](https://baremessages.org) message format
-for Go.
+An implementation of a [BARE](https://baremessages.org)-like message format for
+Go. This is a fork of [go-bare](https://git.sr.ht/~sircmpwn/go-bare).
 
 **Status**
 
 This mostly works, but you may run into some edge cases with union types.
+
+## Changes from upstream
+
+Not much yet.
+
+We intend to remove all external dependencies and remove some limitations
+around integer sizes.
 
 ## Code generation
 
@@ -123,8 +130,3 @@ func init() {
 ```
 
 This is all done for you if you use code generation.
-
-## Contributing, getting help
-
-Send patches and questions to
-[~sircmpwn/public-inbox@lists.sr.ht](mailto:~sircmpwn/public-inbox@lists.sr.ht)

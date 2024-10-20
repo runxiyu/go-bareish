@@ -1,4 +1,4 @@
-module git.sr.ht/~sircmpwn/go-bare
+module git.sr.ht/~runxiyu/go-bareish
 
 go 1.14
 
