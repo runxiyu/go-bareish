@@ -7,11 +7,11 @@ import (
 	"reflect"
 	"regexp"
 
-	"git.sr.ht/~sircmpwn/go-bare"
+	bare "git.sr.ht/~runxiyu/go-bareish"
 )
 
 var (
-	intType = reflect.TypeOf(bare.Int(0))
+	intType  = reflect.TypeOf(bare.Int(0))
 	uintType = reflect.TypeOf(bare.Uint(0))
 )
 

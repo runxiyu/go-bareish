@@ -4,5 +4,5 @@
 //
 // See the git repository for usage examples:
 //
-// https://git.sr.ht/~sircmpwn/go-bare
+// https://git.sr.ht/~runxiyu/go-bareish
 package bare

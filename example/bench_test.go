@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"git.sr.ht/~sircmpwn/go-bare"
+	bare "git.sr.ht/~runxiyu/go-bareish"
 	"github.com/stretchr/testify/assert"
 )
 

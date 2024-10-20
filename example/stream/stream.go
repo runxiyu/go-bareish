@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"git.sr.ht/~sircmpwn/go-bare"
-	"git.sr.ht/~sircmpwn/go-bare/example"
+	bare "git.sr.ht/~runxiyu/go-bareish"
+	"git.sr.ht/~runxiyu/go-bareish/example"
 )
 
 func main() {

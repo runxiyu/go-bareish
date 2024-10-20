@@ -4,7 +4,8 @@ package example
 
 import (
 	"errors"
-	"git.sr.ht/~sircmpwn/go-bare"
+
+	bare "git.sr.ht/~runxiyu/go-bareish"
 )
 
 type PublicKey [128]byte

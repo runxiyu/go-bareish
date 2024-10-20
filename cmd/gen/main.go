@@ -12,7 +12,7 @@ import (
 
 	"git.sr.ht/~sircmpwn/getopt"
 
-	"git.sr.ht/~sircmpwn/go-bare/schema"
+	"git.sr.ht/~runxiyu/go-bareish/schema"
 )
 
 const templateString = `

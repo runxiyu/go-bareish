@@ -1,6 +1,6 @@
 package main
 
-//go:generate go run git.sr.ht/~sircmpwn/go-bare/cmd/gen -p example -s Time ../schema.bare ../schema.go
+//go:generate go run git.sr.ht/~runxiyu/go-bareish/cmd/gen -p example -s Time ../schema.bare ../schema.go
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"git.sr.ht/~sircmpwn/go-bare"
-	"git.sr.ht/~sircmpwn/go-bare/example"
+	bare "git.sr.ht/~runxiyu/go-bareish"
+	"git.sr.ht/~runxiyu/go-bareish/example"
 )
 
 func main() {

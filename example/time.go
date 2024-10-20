@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"git.sr.ht/~sircmpwn/go-bare"
+	bare "git.sr.ht/~runxiyu/go-bareish"
 )
 
 type Time time.Time
