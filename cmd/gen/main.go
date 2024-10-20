@@ -24,7 +24,7 @@ import (
 {{- if .schema.NeedErrors }}
 	"errors"
 {{- end }}
-	"git.sr.ht/~sircmpwn/go-bare"
+	"git.sr.ht/~runxiyu/go-bareish"
 )
 
 {{ define "type" }}

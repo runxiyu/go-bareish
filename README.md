@@ -27,7 +27,7 @@ type Address {
 	state: string
 	country: string
 }
-$ go run git.sr.ht/~sircmpwn/go-bare/cmd/gen -p models schema.bare models/gen.go
+$ go run git.sr.ht/~runxiyu/go-bareish/cmd/gen -p models schema.bare models/gen.go
 ```
 
 Then you can write something like the following:
@@ -57,7 +57,7 @@ same package. See `examples/time.go` for an example of such an implementation.
 
 For many use-cases, it may be more convenient to write your types manually and
 use Marshal and Unmarshal directly. If you choose this approach, you may also
-use `git.sr.ht/~sircmpwn/go-bare/schema.SchemaFor` to generate a BARE schema
+use `git.sr.ht/~runxiyu/go-bareish/schema.SchemaFor` to generate a BARE schema
 language document describing your structs.
 
 ```go
@@ -65,7 +65,7 @@ package main
 
 import (
     "fmt"
-    "git.sr.ht/~sircmpwn/go-bare"
+    "git.sr.ht/~runxiyu/go-bareish"
 )
 
 // type Coordinates {
